@@ -6,6 +6,7 @@ import ImportantDates from "./components/ImportantDates";
 import Circulars from "./components/Circulars";
 import Assessment from "./components/Assessment";
 import Information from "./components/Information";
+import Account from "./components/Account";
 import Footer from "./components/Footer";
 import Login from "./components/Login";
 import Signup from "./components/Signup";
@@ -23,6 +24,7 @@ function App() {
           <Route path="/circulars" element={<Circulars />} />
           <Route path="/assessment" element={<Assessment />} />
           <Route path="/information" element={<Information />} />
+          <Route path="/account" element={<Account />} />
           <Route path="/login" element={<Login />} />
           <Route path="/signup" element={<Signup />} />
           {/* add more routes here, e.g. /status, /documents */}

@@ -7,10 +7,10 @@ export default function Account() {
           <img
             src="/Heading.png"
             alt="Admito"
-            className="w-16 h-16 mx-auto mb-3"
+            className="w-20 h-15 mx-auto mb-3"
           />
 
-          <h1 className="text-3xl font-bold text-amber-700">
+          <h1 className="text-3xl font-bold text-[#805827]">
             My Account
           </h1>
         </div>
@@ -45,7 +45,7 @@ export default function Account() {
 
           <button
             type="button"
-            className="w-full bg-amber-700 text-white py-3 rounded-lg font-medium hover:bg-amber-600 transition-colors duration-300"
+            className="w-full bg-[#805827] text-white py-3 rounded-lg font-medium hover:bg-[#6b4620] transition-colors duration-300"
           >
             Logout
           </button>

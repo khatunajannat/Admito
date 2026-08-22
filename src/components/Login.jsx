@@ -9,7 +9,7 @@ export default function Login() {
           <img
             src="/Heading.png"
             alt="Admito"
-            className="w-16 h-16 mx-auto mb-3"
+            className="w-20 h-15 mx-auto mb-3"
           />
 
           <h1 className="text-3xl font-bold text-[#805827]">
