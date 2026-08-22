@@ -26,7 +26,7 @@ export default function Navbar() {
             </span>
           </Link>
 
-          {/* nav links */}
+          {/* nav links for web*/}
           <div className="flex items-center space-x-6 lg:space-x-8 text-[#805827] font-medium text-sm sm:text-base md:text-lg">
             <a href="#Circular" className="text-[#805827] hover:text-[#FFD700]">
               Circular
@@ -44,7 +44,7 @@ export default function Navbar() {
               Information
             </a>
 
-            {/* Bell -> routes to /notifications */}
+            {/* Bell icon routes to /notifications */}
             <Link
               to="/notifications"
               className="relative text-[#805827] hover:text-[#FFD700]"
