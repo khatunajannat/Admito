@@ -229,10 +229,10 @@ export default function Assessment() {
 
   return (
     <section className="min-h-screen bg-stone-200">
-      {/* Hero-style banner matching theme */}
+      
       <div className="relative overflow-hidden bg-gradient-to-b from-navy to-navy-light pt-24 sm:pt-28 md:pt-32 pb-12 px-4">
-        <div className="pointer-events-none absolute -top-20 -right-20 h-80 w-80 rounded-full border border-gold/20"></div>
-        <div className="pointer-events-none absolute top-10 right-5 h-52 w-52 rounded-full border border-gold/15"></div>
+<div className="pointer-events-none absolute -top-20 -right-20 h-80 w-80 rounded-full border border-amber-700"></div>
+      <div className="pointer-events-none absolute top-10 right-5 h-52 w-52 rounded-full border border-gold/15"></div>
 
         <div className="relative max-w-5xl mx-auto text-center">
           <span className="inline-block text-xs font-semibold text-slate-800 bg-gold rounded-full px-4 py-1.5 mb-4">

@@ -1,3 +1,5 @@
+import { Link } from "react-router-dom";
+
 export default function Login() {
   return (
     <section className="relative min-h-screen overflow-hidden bg-slate-800 flex items-center justify-center px-4">
@@ -10,7 +12,7 @@ export default function Login() {
             className="w-16 h-16 mx-auto mb-3"
           />
 
-          <h1 className="text-3xl font-bold text-amber-700">
+          <h1 className="text-3xl font-bold text-[#805827]">
             Welcome Back
           </h1>
 
@@ -28,7 +30,7 @@ export default function Login() {
             <input
               type="email"
               placeholder="Enter your email"
-              className="w-full px-4 py-3 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-700"
+              className="w-full px-4 py-3 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#805827]"
             />
           </div>
 
@@ -40,13 +42,13 @@ export default function Login() {
             <input
               type="password"
               placeholder="Enter your password"
-              className="w-full px-4 py-3 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-700"
+              className="w-full px-4 py-3 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#805827]"
             />
           </div>
 
           <button
             type="submit"
-            className="w-full bg-amber-700 text-white py-3 rounded-lg font-medium hover:bg-amber-600 transition-colors duration-300"
+            className="w-full bg-[#805827] text-white py-3 rounded-lg font-medium hover:bg-[#6b4620] transition-colors duration-300"
           >
             Login
           </button>
@@ -54,9 +56,12 @@ export default function Login() {
 
         <p className="text-center text-sm text-slate-600 mt-6">
           Don't have an account?{" "}
-          <span className="text-amber-700 font-medium cursor-pointer hover:text-amber-600">
+          <Link
+            to="/signup"
+            className="text-[#805827] font-medium cursor-pointer hover:text-[#FFD700]"
+          >
             Sign Up
-          </span>
+          </Link>
         </p>
 
       </div>

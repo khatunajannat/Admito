@@ -12,11 +12,16 @@ export default function Navbar() {
             to="/"
             className="flex items-center space-x-1 group cursor-pointer"
           >
-            <div>
+            <div className="relative w-10 h-10 sm:w-8 sm:h-8">
               <img
                 src="/Heading.png"
                 alt="Admito"
-                className="w-10 h-10 sm:w-8 sm:h-8"
+                className="absolute inset-0 w-full h-full object-contain group-hover:opacity-0"
+              />
+              <img
+                src="/HeadingYellow.png"
+                alt="Admito"
+                className="absolute inset-0 w-full h-full object-contain opacity-0 group-hover:opacity-100"
               />
             </div>
             <span className="text-lg sm:text-xl md:text-2xl font-medium">
@@ -26,7 +31,7 @@ export default function Navbar() {
             </span>
           </Link>
 
-          {/* nav links for web*/}
+          {/* nav links */}
           <div className="flex items-center space-x-6 lg:space-x-8 text-[#805827] font-medium text-sm sm:text-base md:text-lg">
             <Link to="/circulars" className="text-[#805827] hover:text-[#FFD700]">
               Circular
@@ -37,14 +42,14 @@ export default function Navbar() {
             >
               Assessment
             </Link>
-            <a
-              href="#Information"
+            <Link
+              to="/information"
               className="text-[#805827] hover:text-[#FFD700]"
             >
               Information
-            </a>
+            </Link>
 
-            {/* Bell icon routes to /notifications */}
+            {/* Bell -> routes to /notifications */}
             <Link
               to="/notifications"
               className="relative text-[#805827] hover:text-[#FFD700]"

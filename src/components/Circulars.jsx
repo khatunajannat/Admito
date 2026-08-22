@@ -156,6 +156,8 @@ export default function Circulars() {
   return (
     <section className="min-h-screen bg-stone-200 pt-24 sm:pt-28 md:pt-32 pb-16 px-4">
       <div className="max-w-6xl mx-auto">
+         <div className="pointer-events-none absolute -top-20 -right-20 h-80 w-80 rounded-full border border-amber-700"></div>
+      <div className="pointer-events-none absolute top-10 right-5 h-52 w-52 rounded-full border border-gold/15"></div>
         {/* Header */}
         <div className="mb-8">
           <h1 className="text-3xl md:text-4xl font-semibold text-slate-800 mb-2">

@@ -1,4 +1,11 @@
+import { Link } from "react-router-dom";
+
 export default function Hero() {
+  const scrollToFeatures = (e) => {
+    e.preventDefault();
+    document.getElementById("features")?.scrollIntoView({ behavior: "smooth" });
+  };
+
   return (
     <section className="relative overflow-hidden bg-gradient-to-b from-navy to-navy-light">
       {/* Decorative circles */}
@@ -46,7 +53,8 @@ export default function Hero() {
 
         <div className="flex flex-col mb-12 lg:mb-20 space-y-4 sm:flex-row sm:justify-center sm:space-y-0 sm:space-x-4">
           <a
-            href="#"
+            href="#features"
+            onClick={scrollToFeatures}
             className="inline-flex justify-center items-center py-3 px-6 text-sm font-semibold text-center text-slate-soft rounded\\-lg bg-gold hover:-translate-y-0.5 shadow-lg shadow-gold/25 transition"
           >
             Visit Site
@@ -63,8 +71,8 @@ export default function Hero() {
               ></path>
             </svg>
           </a>
-          <a
-            href="#"
+          <Link
+            to="/login"
             className="inline-flex justify-center items-center py-3 px-6 text-sm font-semibold text-center text-slate-soft rounded\\-lg bg-gold hover:-translate-y-0.5 shadow-lg shadow-gold/25 transition"
           >
             Login/Sign-Up
@@ -80,7 +88,7 @@ export default function Hero() {
                 clipRule="evenodd"
               ></path>
             </svg>
-          </a>
+          </Link>
         </div>
 
         <div className="px-4 mx-auto text-center md:max-w-screen-md lg:max-w-screen-lg lg:px-36">

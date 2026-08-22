@@ -1,3 +1,5 @@
+import { Link } from "react-router-dom";
+
 export default function Signup() {
   return (
     <section className="relative min-h-screen overflow-hidden bg-slate-800 flex items-center justify-center px-4 py-8">
@@ -10,7 +12,7 @@ export default function Signup() {
             className="w-16 h-16 mx-auto mb-3"
           />
 
-          <h1 className="text-3xl font-bold text-amber-700">
+          <h1 className="text-3xl font-bold text-[#805827]">
             Create Account
           </h1>
 
@@ -28,7 +30,7 @@ export default function Signup() {
             <input
               type="text"
               placeholder="Enter your name"
-              className="w-full px-4 py-3 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-700"
+              className="w-full px-4 py-3 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#805827]"
             />
           </div>
 
@@ -40,7 +42,7 @@ export default function Signup() {
             <input
               type="tel"
               placeholder="Enter your phone number"
-              className="w-full px-4 py-3 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-700"
+              className="w-full px-4 py-3 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#805827]"
             />
           </div>
 
@@ -52,7 +54,7 @@ export default function Signup() {
             <input
               type="email"
               placeholder="Enter your email"
-              className="w-full px-4 py-3 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-700"
+              className="w-full px-4 py-3 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#805827]"
             />
           </div>
 
@@ -64,13 +66,13 @@ export default function Signup() {
             <input
               type="password"
               placeholder="Create a password"
-              className="w-full px-4 py-3 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-700"
+              className="w-full px-4 py-3 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#805827]"
             />
           </div>
 
           <button
             type="submit"
-            className="w-full bg-amber-700 text-white py-3 rounded-lg font-medium hover:bg-amber-600 transition-colors duration-300"
+            className="w-full bg-[#805827] text-white py-3 rounded-lg font-medium hover:bg-[#6b4620] transition-colors duration-300"
           >
             Sign Up
           </button>
@@ -78,9 +80,12 @@ export default function Signup() {
 
         <p className="text-center text-sm text-slate-600 mt-6">
           Already have an account?{" "}
-          <span className="text-amber-700 font-medium cursor-pointer hover:text-amber-600">
+          <Link
+            to="/login"
+            className="text-[#805827] font-medium cursor-pointer hover:text-[#FFD700]"
+          >
             Login
-          </span>
+          </Link>
         </p>
 
       </div>
