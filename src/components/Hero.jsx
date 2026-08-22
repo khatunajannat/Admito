@@ -33,8 +33,10 @@ export default function Hero() {
 
         <h1 className="font-display mb-4 text-4xl font-semibold tracking-tight leading-tight text-slate-800 md:text-5xl lg:text-6xl">
           Welcome to{" "}
-          <span className="italic text-slate-800 font-medium">Admito</span> —
-          begin your session here
+          <span className="italic text-slate-800 hover:text-amber-700 transition font-medium">
+            Admito
+          </span>{" "}
+          — begin your session here
         </h1>
 
         <p className="mb-8 text-lg font-normal text-amber-700 lg:text-xl sm:px-16 xl:px-48">
