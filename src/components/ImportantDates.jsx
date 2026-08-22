@@ -205,7 +205,7 @@ function CalendarView({ events, monthDate, setMonthDate }) {
       </div>
 
       <div className="grid grid-cols-7 gap-1 text-center text-[11px] font-semibold text-slate-400 mb-2">
-        {["Su", "Mo", "Tu", "We", "Thu", "Fr", "Sa"].map((d) => (
+        {["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"].map((d) => (
           <span key={d}>{d}</span>
         ))}
       </div>
