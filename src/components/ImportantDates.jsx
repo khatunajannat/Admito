@@ -20,6 +20,117 @@ const categoryStyles = {
   deadline: { label: "Deadline",      dot: "bg-red-500",    badge: "bg-red-50 text-red-700" },
   exam:     { label: "Exam Date",     dot: "bg-[#FFD700]",  badge: "bg-yellow-50 text-[#805827]" },
   result:   { label: "Result",        dot: "bg-emerald-500",badge: "bg-emerald-50 text-emerald-700" },
+  {
+    id: 1,
+    title: "DU Kha Unit Form Fill-up Starts",
+    university: "Dhaka University",
+    type: "public",
+    category: "form",
+    date: "2026-08-25",
+  },
+  {
+    id: 2,
+    title: "NSU Fall Admission Deadline",
+    university: "North South University",
+    type: "private",
+    category: "deadline",
+    date: "2026-08-28",
+  },
+  {
+    id: 3,
+    title: "BUET Admission Test",
+    university: "BUET",
+    type: "public",
+    category: "exam",
+    date: "2026-09-05",
+  },
+  {
+    id: 4,
+    title: "BRAC University Result Publication",
+    university: "BRAC University",
+    type: "private",
+    category: "result",
+    date: "2026-09-08",
+  },
+  {
+    id: 5,
+    title: "RU Ka Unit Exam",
+    university: "Rajshahi University",
+    type: "public",
+    category: "exam",
+    date: "2026-09-12",
+  },
+  {
+    id: 6,
+    title: "AIUB Spring Form Fill-up Ends",
+    university: "AIUB",
+    type: "private",
+    category: "form",
+    date: "2026-09-15",
+  },
+  {
+    id: 7,
+    title: "CU Admission Result",
+    university: "Chittagong University",
+    type: "public",
+    category: "result",
+    date: "2026-09-20",
+  },
+  {
+    id: 8,
+    title: "EWU Application Deadline",
+    university: "East West University",
+    type: "private",
+    category: "deadline",
+    date: "2026-09-22",
+  },
+  {
+    id: 9,
+    title: "AUST Fall Admission Form Fill-up Starts",
+    university: "Ahsanullah University of Science and Technology (AUST)",
+    type: "private",
+    category: "form",
+    date: "2026-08-30",
+  },
+  {
+    id: 10,
+    title: "AUST Admission Test",
+    university: "Ahsanullah University of Science and Technology (AUST)",
+    type: "private",
+    category: "exam",
+    date: "2026-09-18",
+  },
+  {
+    id: 11,
+    title: "AUST Admission Result Publication",
+    university: "Ahsanullah University of Science and Technology (AUST)",
+    type: "private",
+    category: "result",
+    date: "2026-09-25",
+  },
+];
+
+const categoryStyles = {
+  form: {
+    label: "Form Fill-up",
+    dot: "bg-blue-500",
+    badge: "bg-blue-50 text-blue-700",
+  },
+  deadline: {
+    label: "Deadline",
+    dot: "bg-red-500",
+    badge: "bg-red-50 text-red-700",
+  },
+  exam: {
+    label: "Exam Date",
+    dot: "bg-[#FFD700]",
+    badge: "bg-yellow-50 text-[#805827]",
+  },
+  result: {
+    label: "Result",
+    dot: "bg-emerald-500",
+    badge: "bg-emerald-50 text-emerald-700",
+  },
 };
 
 function EventCard({ e }) {
@@ -30,6 +141,14 @@ function EventCard({ e }) {
       <div className="ml-1 flex flex-col items-center justify-center w-14 shrink-0 rounded-lg bg-slate-50 py-2">
         <span className="text-xs font-semibold text-slate-400 uppercase">
           {new Date(e.date + "T00:00:00").toLocaleDateString("en-US", { month: "short" })}
+      <span
+        className={`absolute left-0 top-0 h-full w-1 rounded-l-xl ${cat.dot}`}
+      />
+      <div className="ml-1 flex flex-col items-center justify-center w-14 shrink-0 rounded-lg bg-slate-50 py-2">
+        <span className="text-xs font-semibold text-slate-400 uppercase">
+          {new Date(e.date + "T00:00:00").toLocaleDateString("en-US", {
+            month: "short",
+          })}
         </span>
         <span className="text-xl font-bold text-slate-800">
           {new Date(e.date + "T00:00:00").getDate()}
@@ -39,6 +158,9 @@ function EventCard({ e }) {
         <div className="flex items-start justify-between gap-2">
           <p className="text-sm font-semibold text-slate-800">{e.title}</p>
           <span className={`whitespace-nowrap rounded-full px-2 py-0.5 text-[11px] font-semibold ${cat.badge}`}>
+          <span
+            className={`whitespace-nowrap rounded-full px-2 py-0.5 text-[11px] font-semibold ${cat.badge}`}
+          >
             {cat.label}
           </span>
         </div>
@@ -46,6 +168,9 @@ function EventCard({ e }) {
         <span
           className={`mt-2 inline-block rounded-full px-2 py-0.5 text-[11px] font-medium ${
             e.type === "public" ? "bg-[#805827]/10 text-[#805827]" : "bg-slate-100 text-slate-600"
+            e.type === "public"
+              ? "bg-[#805827]/10 text-[#805827]"
+              : "bg-slate-100 text-slate-600"
           }`}
         >
           {e.type === "public" ? "Public University" : "Private University"}
@@ -56,6 +181,7 @@ function EventCard({ e }) {
 }
 
 // ---- Simple month calendar grid ----
+//  month calendar grid ----
 function CalendarView({ events, monthDate, setMonthDate }) {
   const year = monthDate.getFullYear();
   const month = monthDate.getMonth();
@@ -81,6 +207,10 @@ function CalendarView({ events, monthDate, setMonthDate }) {
   for (let d = 1; d <= daysInMonth; d++) cells.push(d);
 
   const monthLabel = monthDate.toLocaleDateString("en-US", { month: "long", year: "numeric" });
+  const monthLabel = monthDate.toLocaleDateString("en-US", {
+    month: "long",
+    year: "numeric",
+  });
 
   return (
     <div className="rounded-xl border border-slate-200 bg-white p-4">
@@ -102,6 +232,8 @@ function CalendarView({ events, monthDate, setMonthDate }) {
 
       <div className="grid grid-cols-7 gap-1 text-center text-[11px] font-semibold text-slate-400 mb-2">
         {["Su", "Mo", "Tu", "We", "Th", "Fr", "Sa"].map((d) => (
+      <div className="grid grid-cols-7 gap-1 text-center text-[11px] font-semibold text-slate-800 mb-2">
+        {["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"].map((d) => (
           <span key={d}>{d}</span>
         ))}
       </div>
@@ -127,6 +259,7 @@ function CalendarView({ events, monthDate, setMonthDate }) {
               </div>
             </div>
           )
+          ),
         )}
       </div>
 
@@ -166,6 +299,18 @@ export default function ImportantDates() {
       <div className="mx-auto max-w-4xl px-6">
         <div className="mb-6 flex flex-wrap items-center justify-between gap-4">
           {/* filter tabs */}
+      <div className="mx-auto max-w-4xl px-6 pb-6">
+        <h1 className="text-3xl font-semibold text-slate-800">
+          Important Dates
+        </h1>
+        <p className="mt-1 text-sm text-slate-500">
+          Form fill-up, deadlines, exam dates, and result publications across
+          public and private universities.
+        </p>
+      </div>
+
+      <div className="mx-auto max-w-4xl px-6">
+        <div className="mb-6 flex flex-wrap items-center justify-between gap-4">
           <div className="flex items-center gap-2 rounded-lg border border-slate-200 bg-white p-1">
             {["all", "public", "private"].map((f) => (
               <button
@@ -188,6 +333,9 @@ export default function ImportantDates() {
               onClick={() => setView("list")}
               className={`rounded-md px-3 py-1.5 text-sm font-medium transition ${
                 view === "list" ? "bg-[#805827] text-white" : "text-slate-500 hover:text-slate-800"
+                view === "list"
+                  ? "bg-[#805827] text-white"
+                  : "text-slate-500 hover:text-slate-800"
               }`}
             >
               List
@@ -196,6 +344,9 @@ export default function ImportantDates() {
               onClick={() => setView("calendar")}
               className={`rounded-md px-3 py-1.5 text-sm font-medium transition ${
                 view === "calendar" ? "bg-[#805827] text-white" : "text-slate-500 hover:text-slate-800"
+                view === "calendar"
+                  ? "bg-[#805827] text-white"
+                  : "text-slate-500 hover:text-slate-800"
               }`}
             >
               Calendar
@@ -226,4 +377,5 @@ export default function ImportantDates() {
       </div>
     </div>
   );
+}
 }
