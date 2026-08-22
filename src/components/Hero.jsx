@@ -1,7 +1,8 @@
 export default function Hero() {
   return (
     <section className="relative overflow-hidden bg-gradient-to-b from-navy to-navy-light">
-      <div className="pointer-events-none absolute -top-20 -right-20 h-80 w-80 rounded-full border border-gold/20"></div>
+      {/* Decorative circles */}
+      <div className="pointer-events-none absolute -top-20 -right-20 h-80 w-80 rounded-full border border-amber-700"></div>
       <div className="pointer-events-none absolute top-10 right-5 h-52 w-52 rounded-full border border-gold/15"></div>
 
       <div className="relative py-16 px-4 mx-auto max-w-screen-xl text-center lg:py-24 lg:px-12">
