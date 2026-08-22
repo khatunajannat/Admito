@@ -7,13 +7,13 @@ export default function Hero() {
       <div className="relative py-16 px-4 mx-auto max-w-screen-xl text-center lg:py-24 lg:px-12">
         <a
           href="#"
-          className="inline-flex justify-between items-center py-1 px-1 pr-4 mb-7 text-sm bg-white/5 rounded-full text-gray-200 hover:bg-white/10 transition"
+          className="inline-flex justify-between items-center py-6 px-6 pr-4 mb-7 text-sm bg-white/5 rounded-full text-gray-200 hover:bg-white/10 transition"
           role="alert"
         >
-          <span className="text-xs bg-gold rounded-full text-navy font-semibold px-4 py-1.5 mr-3">
+          <span className="text-xs bg-gold rounded-full text-slate-800 hover:text-amber-700 transition font-semibold px-4 py-1.5 mr-3">
             New
           </span>
-          <span className="text-sm font-medium">
+          <span className="text-sm font-medium text-slate-800 hover:text-amber-700 transition">
             Session 2026&ndash;27 admissions are now open
           </span>
           <svg
