@@ -1,9 +1,17 @@
+import { Link } from "react-router-dom";
+
 export default function Navbar() {
+  const unreadCount = 3;
+
   return (
-    <nav className="fixed top-0 w-full z-50 transition-all duration-300 bg-slate-800 backdrop-blur-lg ">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 ">
+    <nav className="fixed top-0 w-full z-50 transition-all duration-300 bg-slate-800 backdrop-blur-lg">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-14 sm:h-16 md:h-20 lg:h-24">
-          <div className="flex items-center space-x-1 group cursor-pointer">
+          {/* Logo -> always goes home */}
+          <Link
+            to="/"
+            className="flex items-center space-x-1 group cursor-pointer"
+          >
             <div>
               <img
                 src="/Heading.png"
@@ -11,18 +19,16 @@ export default function Navbar() {
                 className="w-10 h-10 sm:w-8 sm:h-8"
               />
             </div>
-            <span className="text-lg sm:text-xl md:text-2xl font-medium ">
-              <span className="text-[#805827] hover:text-[#FFD700]">
+            <span className="text-lg sm:text-xl md:text-2xl font-medium">
+              <span className="text-[#805827] group-hover:text-[#FFD700]">
                 Admito
               </span>
             </span>
-          </div>
-          {/*nav linlks*/}
-          <div className="flex item-center space-x-6 lg:space-x-8 text-[#805827] font-medium text-sm sm:text-base md:text-lg">
-            <a
-              href="#Circular "
-              className="text-[#805827] hover:text-[#FFD700]"
-            >
+          </Link>
+
+          {/* nav links */}
+          <div className="flex items-center space-x-6 lg:space-x-8 text-[#805827] font-medium text-sm sm:text-base md:text-lg">
+            <a href="#Circular" className="text-[#805827] hover:text-[#FFD700]">
               Circular
             </a>
             <a
@@ -38,12 +44,14 @@ export default function Navbar() {
               Information
             </a>
 
-            <a
-              href="#Notification"
-              className="text-[#805827] hover:text-[#FFD700]"
+            {/* Bell -> routes to /notifications */}
+            <Link
+              to="/notifications"
+              className="relative text-[#805827] hover:text-[#FFD700]"
+              aria-label="Notifications"
             >
               <svg
-                className="w-6 h-6 text-[#805827] hover:text-[#FFD700] transition-colors duration-300"
+                className="w-6 h-6 transition-colors duration-300"
                 viewBox="0 0 24 24"
                 fill="currentColor"
               >
@@ -53,7 +61,12 @@ export default function Navbar() {
                   clipRule="evenodd"
                 />
               </svg>
-            </a>
+              {unreadCount > 0 && (
+                <span className="absolute -top-1 -right-1 flex items-center justify-center w-4 h-4 text-[10px] font-semibold text-white bg-red-500 border border-slate-800 rounded-full">
+                  {unreadCount}
+                </span>
+              )}
+            </Link>
           </div>
         </div>
       </div>

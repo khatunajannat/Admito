@@ -1,20 +1,23 @@
+import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Navbar from "./components/Navbar";
-import Hero from "./components/Hero";
-import Features from "./components/Features";
+import Home from "./components/Home";
+import NotificationsPage from "./components/NotificationsPage";
 import Footer from "./components/Footer";
-
 
 function App() {
   return (
-    <div className="min-h-screen bg-stone-200 text-slate-800 overflow-hidden">
-      <Navbar />
+    <BrowserRouter>
+      <div className="min-h-screen bg-stone-200 text-slate-800">
+        <Navbar />
 
-      <Hero />
+        <Routes>
+          <Route path="/" element={<Home />} />
+          <Route path="/notifications" element={<NotificationsPage />} />
+        </Routes>
 
-
-      <Features />
-      <Footer />
-    </div>
+        <Footer />
+      </div>
+    </BrowserRouter>
   );
 }
 
