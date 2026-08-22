@@ -28,15 +28,15 @@ export default function Navbar() {
 
           {/* nav links for web*/}
           <div className="flex items-center space-x-6 lg:space-x-8 text-[#805827] font-medium text-sm sm:text-base md:text-lg">
-            <a href="#Circular" className="text-[#805827] hover:text-[#FFD700]">
+            <Link to="/circulars" className="text-[#805827] hover:text-[#FFD700]">
               Circular
-            </a>
-            <a
-              href="#Assessment"
+            </Link>
+            <Link
+              to="/assessment"
               className="text-[#805827] hover:text-[#FFD700]"
             >
               Assessment
-            </a>
+            </Link>
             <a
               href="#Information"
               className="text-[#805827] hover:text-[#FFD700]"
