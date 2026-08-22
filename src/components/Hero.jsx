@@ -19,7 +19,7 @@ export default function Hero() {
           </span>
           <svg
             className="ml-2 w-5 h-5"
-            fill="slate-800"
+            fill="slate-800 hover:amber-700 transition"
             viewBox="0 0 20 20"
             xmlns="http://www.w3.org/2000/svg"
           >
