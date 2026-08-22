@@ -31,12 +31,12 @@ export default function Navbar() {
             <Link to="/circulars" className="text-[#805827] hover:text-[#FFD700]">
               Circular
             </Link>
-            <a
-              href="#Assessment"
+            <Link
+              to="/assessment"
               className="text-[#805827] hover:text-[#FFD700]"
             >
               Assessment
-            </a>
+            </Link>
             <a
               href="#Information"
               className="text-[#805827] hover:text-[#FFD700]"

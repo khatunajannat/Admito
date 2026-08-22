@@ -4,6 +4,7 @@ import Home from "./components/Home";
 import NotificationsPage from "./components/NotificationsPage";
 import ImportantDates from "./components/ImportantDates";
 import Circulars from "./components/Circulars";
+import Assessment from "./components/Assessment";
 import Footer from "./components/Footer";
 
 function App() {
@@ -17,6 +18,7 @@ function App() {
           <Route path="/notifications" element={<NotificationsPage />} />
           <Route path="/important-dates" element={<ImportantDates />} />
           <Route path="/circulars" element={<Circulars />} />
+          <Route path="/assessment" element={<Assessment />} />
           {/* add more routes here, e.g. /status, /documents */}
         </Routes>
 
