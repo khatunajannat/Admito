@@ -7,7 +7,6 @@ export default function Navbar() {
     <nav className="fixed top-0 w-full z-50 transition-all duration-300 bg-slate-800 backdrop-blur-lg">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-14 sm:h-16 md:h-20 lg:h-24">
-          {/* Logo -> always goes home */}
           <Link
             to="/"
             className="flex items-center space-x-1 group cursor-pointer"
@@ -33,7 +32,10 @@ export default function Navbar() {
 
           {/* nav links */}
           <div className="flex items-center space-x-6 lg:space-x-8 text-[#805827] font-medium text-sm sm:text-base md:text-lg">
-            <Link to="/circulars" className="text-[#805827] hover:text-[#FFD700]">
+            <Link
+              to="/circulars"
+              className="text-[#805827] hover:text-[#FFD700]"
+            >
               Circular
             </Link>
             <Link
