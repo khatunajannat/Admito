@@ -1,6 +1,5 @@
 import { useState, useMemo } from "react";
 
-// Sample assessment data — swap with backend data later
 const UNIVERSITIES = [
   {
     id: 1,
@@ -35,14 +34,16 @@ const UNIVERSITIES = [
     unit: "Undergraduate Admission",
     groups: ["Science"],
     eligibility: {
-      minGPA: "SSC + HSC combined ≥ 9.00 (GPA 5.00 preferred in Math/Physics/Chemistry)",
+      minGPA:
+        "SSC + HSC combined ≥ 9.00 (GPA 5.00 preferred in Math/Physics/Chemistry)",
       requiredSubjects: ["Physics", "Chemistry", "Mathematics"],
     },
     examPattern: {
       mode: "Written (short + analytical)",
       duration: "150 minutes (2 sittings)",
       totalMarks: 400,
-      negativeMarking: "None on written; MCQ pre-screening has negative marking",
+      negativeMarking:
+        "None on written; MCQ pre-screening has negative marking",
       questionCount: "Pre-screening MCQ + written analytical",
     },
     markDistribution: [
@@ -133,7 +134,9 @@ const UNIVERSITIES = [
     groups: ["Science", "Commerce", "Arts"],
     eligibility: {
       minGPA: "SSC + HSC combined ≥ 6.00 (program dependent, some need ≥7.00)",
-      requiredSubjects: ["Depends on program — Science required for Engineering/CS"],
+      requiredSubjects: [
+        "Depends on program — Science required for Engineering/CS",
+      ],
     },
     examPattern: {
       mode: "No admission test — GPA + SAT/university-specific screening (optional)",
@@ -155,7 +158,9 @@ const UNIVERSITIES = [
     groups: ["Science", "Commerce", "Arts"],
     eligibility: {
       minGPA: "SSC + HSC combined ≥ 6.00",
-      requiredSubjects: ["Depends on program — Science required for Engineering/CS"],
+      requiredSubjects: [
+        "Depends on program — Science required for Engineering/CS",
+      ],
     },
     examPattern: {
       mode: "Written English + Math screening for select programs",
@@ -207,7 +212,10 @@ const TYPE_BADGE = {
 };
 
 function MaxMark({ dist }) {
-  const total = dist.reduce((sum, d) => sum + (typeof d.marks === "number" ? d.marks : 0), 0);
+  const total = dist.reduce(
+    (sum, d) => sum + (typeof d.marks === "number" ? d.marks : 0),
+    0,
+  );
   return total;
 }
 
@@ -222,29 +230,29 @@ export default function Assessment() {
         query.trim() === "" ||
         u.name.toLowerCase().includes(query.toLowerCase()) ||
         u.unit.toLowerCase().includes(query.toLowerCase());
-      const matchesGroup = groupFilter === "all" || u.groups.includes(groupFilter);
+      const matchesGroup =
+        groupFilter === "all" || u.groups.includes(groupFilter);
       return matchesQuery && matchesGroup;
     });
   }, [query, groupFilter]);
 
   return (
     <section className="min-h-screen bg-stone-200">
-      
       <div className="relative overflow-hidden bg-gradient-to-b from-navy to-navy-light pt-24 sm:pt-28 md:pt-32 pb-12 px-4">
-<div className="pointer-events-none absolute -top-20 -right-20 h-80 w-80 rounded-full border border-amber-700"></div>
-      <div className="pointer-events-none absolute top-10 right-5 h-52 w-52 rounded-full border border-gold/15"></div>
+        <div className="pointer-events-none absolute -top-20 -right-20 h-80 w-80 rounded-full border border-amber-700"></div>
+        <div className="pointer-events-none absolute top-10 right-5 h-52 w-52 rounded-full border border-gold/15"></div>
 
         <div className="relative max-w-5xl mx-auto text-center">
-          <span className="inline-block text-xs font-semibold text-slate-800 bg-gold rounded-full px-4 py-1.5 mb-4">
+          <span className="inline-block text-xl font-semibold text-slate-800 bg-gold rounded-full px-1 py-1.5 mb-4">
             Exam Guide
           </span>
           <h1 className="font-display text-3xl md:text-4xl lg:text-5xl font-semibold tracking-tight text-slate-800 mb-3">
             Assessment &amp; Mark Distribution
           </h1>
           <p className="text-amber-700 max-w-2xl mx-auto lg:text-lg">
-            Compare eligibility, subject-wise mark breakdown, and exam
-            patterns across public and private universities in Bangladesh —
-            know exactly what to prepare for, before you apply.
+            Compare eligibility, subject-wise mark breakdown, and exam patterns
+            across public and private universities in Bangladesh — know exactly
+            what to prepare for, before you apply.
           </p>
         </div>
       </div>
@@ -259,7 +267,12 @@ export default function Assessment() {
               stroke="currentColor"
               viewBox="0 0 24 24"
             >
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 21l-4.35-4.35M11 19a8 8 0 100-16 8 8 0 000 16z" />
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth="2"
+                d="M21 21l-4.35-4.35M11 19a8 8 0 100-16 8 8 0 000 16z"
+              />
             </svg>
             <input
               type="text"
@@ -310,14 +323,19 @@ export default function Assessment() {
                       <h3 className="text-base md:text-lg font-semibold text-slate-800">
                         {u.name}
                       </h3>
-                      <span className={`text-xs font-medium px-2 py-0.5 rounded capitalize ${TYPE_BADGE[u.type]}`}>
+                      <span
+                        className={`text-xs font-medium px-2 py-0.5 rounded capitalize ${TYPE_BADGE[u.type]}`}
+                      >
                         {u.type}
                       </span>
                     </div>
                     <p className="text-xs text-slate-500 mb-2">{u.unit}</p>
                     <div className="flex gap-1.5 flex-wrap">
                       {u.groups.map((g) => (
-                        <span key={g} className={`text-xs font-medium px-2 py-0.5 rounded-full ${GROUP_STYLES[g]}`}>
+                        <span
+                          key={g}
+                          className={`text-xs font-medium px-2 py-0.5 rounded-full ${GROUP_STYLES[g]}`}
+                        >
                           {g}
                         </span>
                       ))}
@@ -329,7 +347,12 @@ export default function Assessment() {
                     stroke="currentColor"
                     viewBox="0 0 24 24"
                   >
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" />
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth="2"
+                      d="M19 9l-7 7-7-7"
+                    />
                   </svg>
                 </button>
 
@@ -340,12 +363,24 @@ export default function Assessment() {
                       {/* Eligibility */}
                       <div>
                         <h4 className="flex items-center gap-1.5 text-sm font-semibold text-slate-800 mb-2">
-                          <svg className="w-4 h-4 text-amber-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.6" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                          <svg
+                            className="w-4 h-4 text-amber-700"
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                          >
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth="1.6"
+                              d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
+                            />
                           </svg>
                           Eligibility
                         </h4>
-                        <p className="text-sm text-slate-600 mb-2">{u.eligibility.minGPA}</p>
+                        <p className="text-sm text-slate-600 mb-2">
+                          {u.eligibility.minGPA}
+                        </p>
                         <div className="flex flex-wrap gap-1.5">
                           {u.eligibility.requiredSubjects.map((s) => (
                             <span
@@ -361,31 +396,51 @@ export default function Assessment() {
                       {/* Exam pattern */}
                       <div>
                         <h4 className="flex items-center gap-1.5 text-sm font-semibold text-slate-800 mb-2">
-                          <svg className="w-4 h-4 text-amber-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.6" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" />
+                          <svg
+                            className="w-4 h-4 text-amber-700"
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                          >
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth="1.6"
+                              d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"
+                            />
                           </svg>
                           Exam Pattern
                         </h4>
                         <dl className="text-sm text-slate-600 space-y-1.5">
                           <div className="flex justify-between gap-3">
                             <dt className="text-slate-400">Mode</dt>
-                            <dd className="text-right font-medium text-slate-700">{u.examPattern.mode}</dd>
+                            <dd className="text-right font-medium text-slate-700">
+                              {u.examPattern.mode}
+                            </dd>
                           </div>
                           <div className="flex justify-between gap-3">
                             <dt className="text-slate-400">Duration</dt>
-                            <dd className="text-right font-medium text-slate-700">{u.examPattern.duration}</dd>
+                            <dd className="text-right font-medium text-slate-700">
+                              {u.examPattern.duration}
+                            </dd>
                           </div>
                           <div className="flex justify-between gap-3">
                             <dt className="text-slate-400">Total Marks</dt>
-                            <dd className="text-right font-medium text-slate-700">{u.examPattern.totalMarks}</dd>
+                            <dd className="text-right font-medium text-slate-700">
+                              {u.examPattern.totalMarks}
+                            </dd>
                           </div>
                           <div className="flex justify-between gap-3">
                             <dt className="text-slate-400">Questions</dt>
-                            <dd className="text-right font-medium text-slate-700">{u.examPattern.questionCount}</dd>
+                            <dd className="text-right font-medium text-slate-700">
+                              {u.examPattern.questionCount}
+                            </dd>
                           </div>
                           <div className="flex justify-between gap-3">
                             <dt className="text-slate-400">Negative Marking</dt>
-                            <dd className="text-right font-medium text-slate-700">{u.examPattern.negativeMarking}</dd>
+                            <dd className="text-right font-medium text-slate-700">
+                              {u.examPattern.negativeMarking}
+                            </dd>
                           </div>
                         </dl>
                       </div>
@@ -394,8 +449,18 @@ export default function Assessment() {
                     {/* Mark distribution bars */}
                     <div className="mt-6">
                       <h4 className="flex items-center gap-1.5 text-sm font-semibold text-slate-800 mb-3">
-                        <svg className="w-4 h-4 text-amber-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.6" d="M9 19V6l7-3v13M9 19l-6-2V9l6-3m0 13l7 3V9m0 10l6-3V4l-6-2" />
+                        <svg
+                          className="w-4 h-4 text-amber-700"
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth="1.6"
+                            d="M9 19V6l7-3v13M9 19l-6-2V9l6-3m0 13l7 3V9m0 10l6-3V4l-6-2"
+                          />
                         </svg>
                         Mark Distribution
                       </h4>
@@ -407,7 +472,9 @@ export default function Assessment() {
                             <div key={d.subject}>
                               <div className="flex justify-between text-xs text-slate-600 mb-1">
                                 <span>{d.subject}</span>
-                                <span className="font-medium">{d.marks} marks</span>
+                                <span className="font-medium">
+                                  {d.marks} marks
+                                </span>
                               </div>
                               <div className="w-full h-2 bg-stone-100 rounded-full overflow-hidden">
                                 <div
