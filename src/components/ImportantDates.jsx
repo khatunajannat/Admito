@@ -1,6 +1,6 @@
 import { useState, useMemo } from "react";
 
-// ---- Dummy data: swap with real API data later ----
+// Dummy data
 const events = [
   {
     id: 1,
@@ -156,7 +156,7 @@ function EventCard({ e }) {
   );
 }
 
-//  month calendar grid ----
+//  month calendar grid
 function CalendarView({ events, monthDate, setMonthDate }) {
   const year = monthDate.getFullYear();
   const month = monthDate.getMonth();

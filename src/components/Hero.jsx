@@ -1,6 +1,6 @@
 export default function Hero() {
   return (
-    <section className="relative overflow-hidden bg-gradient-to-b from-navy to-navy-light">
+    <section className="relative overflow-hidden bg-stone-200">
       {/* Decorative circles */}
       <div className="pointer-events-none absolute -top-20 -right-20 h-80 w-80 rounded-full border border-amber-700"></div>
       <div className="pointer-events-none absolute top-10 right-5 h-52 w-52 rounded-full border border-gold/15"></div>
