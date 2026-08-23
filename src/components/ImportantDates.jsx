@@ -1,18 +1,95 @@
 import { useState, useMemo } from "react";
 
-// ---- Dummy data: swap with real API data later ----
+//Dummy data
 const events = [
-  { id: 1, title: "DU Kha Unit Form Fill-up Starts", university: "Dhaka University", type: "public", category: "form", date: "2026-08-25" },
-  { id: 2, title: "NSU Fall Admission Deadline", university: "North South University", type: "private", category: "deadline", date: "2026-08-28" },
-  { id: 3, title: "BUET Admission Test", university: "BUET", type: "public", category: "exam", date: "2026-09-05" },
-  { id: 4, title: "BRAC University Result Publication", university: "BRAC University", type: "private", category: "result", date: "2026-09-08" },
-  { id: 5, title: "RU Ka Unit Exam", university: "Rajshahi University", type: "public", category: "exam", date: "2026-09-12" },
-  { id: 6, title: "AIUB Spring Form Fill-up Ends", university: "AIUB", type: "private", category: "form", date: "2026-09-15" },
-  { id: 7, title: "CU Admission Result", university: "Chittagong University", type: "public", category: "result", date: "2026-09-20" },
-  { id: 8, title: "EWU Application Deadline", university: "East West University", type: "private", category: "deadline", date: "2026-09-22" },
-  { id: 9, title: "AUST Fall Admission Form Fill-up Starts", university: "Ahsanullah University of Science and Technology (AUST)", type: "private", category: "form", date: "2026-08-30" },
-  { id: 10, title: "AUST Admission Test", university: "Ahsanullah University of Science and Technology (AUST)", type: "private", category: "exam", date: "2026-09-18" },
-  { id: 11, title: "AUST Admission Result Publication", university: "Ahsanullah University of Science and Technology (AUST)", type: "private", category: "result", date: "2026-09-25" },
+  {
+    id: 1,
+    title: "DU Kha Unit Form Fill-up Starts",
+    university: "Dhaka University",
+    type: "public",
+    category: "form",
+    date: "2026-08-25",
+  },
+  {
+    id: 2,
+    title: "NSU Fall Admission Deadline",
+    university: "North South University",
+    type: "private",
+    category: "deadline",
+    date: "2026-08-28",
+  },
+  {
+    id: 3,
+    title: "BUET Admission Test",
+    university: "BUET",
+    type: "public",
+    category: "exam",
+    date: "2026-09-05",
+  },
+  {
+    id: 4,
+    title: "BRAC University Result Publication",
+    university: "BRAC University",
+    type: "private",
+    category: "result",
+    date: "2026-09-08",
+  },
+  {
+    id: 5,
+    title: "RU Ka Unit Exam",
+    university: "Rajshahi University",
+    type: "public",
+    category: "exam",
+    date: "2026-09-12",
+  },
+  {
+    id: 6,
+    title: "AIUB Spring Form Fill-up Ends",
+    university: "AIUB",
+    type: "private",
+    category: "form",
+    date: "2026-09-15",
+  },
+  {
+    id: 7,
+    title: "CU Admission Result",
+    university: "Chittagong University",
+    type: "public",
+    category: "result",
+    date: "2026-09-20",
+  },
+  {
+    id: 8,
+    title: "EWU Application Deadline",
+    university: "East West University",
+    type: "private",
+    category: "deadline",
+    date: "2026-09-22",
+  },
+  {
+    id: 9,
+    title: "AUST Fall Admission Form Fill-up Starts",
+    university: "Ahsanullah University of Science and Technology (AUST)",
+    type: "private",
+    category: "form",
+    date: "2026-08-30",
+  },
+  {
+    id: 10,
+    title: "AUST Admission Test",
+    university: "Ahsanullah University of Science and Technology (AUST)",
+    type: "private",
+    category: "exam",
+    date: "2026-09-18",
+  },
+  {
+    id: 11,
+    title: "AUST Admission Result Publication",
+    university: "Ahsanullah University of Science and Technology (AUST)",
+    type: "private",
+    category: "result",
+    date: "2026-09-25",
+  },
 ];
 
 const categoryStyles = {
@@ -79,7 +156,7 @@ function EventCard({ e }) {
   );
 }
 
-// ---- Simple month calendar grid ----
+//Simple month calendar grid
 function CalendarView({ events, monthDate, setMonthDate }) {
   const year = monthDate.getFullYear();
   const month = monthDate.getMonth();
@@ -157,7 +234,6 @@ function CalendarView({ events, monthDate, setMonthDate }) {
         )}
       </div>
 
-      {/* legend */}
       <div className="mt-4 flex flex-wrap gap-3 border-t border-slate-100 pt-3">
         {Object.entries(categoryStyles).map(([key, val]) => (
           <div key={key} className="flex items-center gap-1.5">

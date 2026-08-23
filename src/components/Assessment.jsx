@@ -446,7 +446,6 @@ export default function Assessment() {
                       </div>
                     </div>
 
-                    {/* Mark distribution bars */}
                     <div className="mt-6">
                       <h4 className="flex items-center gap-1.5 text-sm font-semibold text-slate-800 mb-3">
                         <svg

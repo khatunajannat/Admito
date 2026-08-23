@@ -4,7 +4,6 @@ export default function Signup() {
   return (
     <section className="relative min-h-screen overflow-hidden bg-slate-800 flex items-center justify-center px-4 py-8">
       <div className="w-full max-w-md bg-white rounded-2xl shadow-lg p-8">
-
         <div className="text-center mb-8">
           <img
             src="/Heading.png"
@@ -12,13 +11,9 @@ export default function Signup() {
             className="w-20 h-14 mx-auto mb-3"
           />
 
-          <h1 className="text-3xl font-bold text-[#805827]">
-            Create Account
-          </h1>
+          <h1 className="text-3xl font-bold text-[#805827]">Create Account</h1>
 
-          <p className="text-slate-600 mt-2">
-            Sign up for your Admito account
-          </p>
+          <p className="text-slate-600 mt-2">Sign up for your Admito account</p>
         </div>
 
         <form className="space-y-4">
@@ -87,7 +82,6 @@ export default function Signup() {
             Login
           </Link>
         </p>
-
       </div>
     </section>
   );

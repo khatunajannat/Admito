@@ -27,7 +27,6 @@ function App() {
           <Route path="/account" element={<Account />} />
           <Route path="/login" element={<Login />} />
           <Route path="/signup" element={<Signup />} />
-          {/* add more routes here, e.g. /status, /documents */}
         </Routes>
 
         <Footer />
