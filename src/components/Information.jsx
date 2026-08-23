@@ -393,7 +393,7 @@ export default function Information() {
 
           {/* Save bar — Flowbite button pattern */}
           <div className="flex items-center justify-between gap-4 px-6 py-4 bg-gray-50 border-t border-gray-200 rounded-b-lg">
-            <p className="text-xs text-gray-500">
+            <p className="text-xs text-red-500 font-medium">
               Saved details are stored on this device and reused to help you
               fill out individual university forms faster.
             </p>
