@@ -3,7 +3,7 @@ import { useState } from "react";
 
 export default function Hero() {
   const [isLoggedIn, setIsLoggedIn] = useState(
-    () => localStorage.getItem("isLoggedIn") === "true"
+    () => localStorage.getItem("isLoggedIn") === "true",
   );
 
   const scrollToFeatures = (e) => {

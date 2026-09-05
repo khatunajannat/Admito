@@ -5,7 +5,7 @@ export default function Account() {
   const navigate = useNavigate();
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(
-    () => !!localStorage.getItem("userId")
+    () => !!localStorage.getItem("userId"),
   );
 
   const [error, setError] = useState("");
@@ -51,9 +51,7 @@ export default function Account() {
             className="w-20 h-15 mx-auto mb-3"
           />
 
-          <h1 className="text-3xl font-bold text-[#805827] mb-2">
-            My Account
-          </h1>
+          <h1 className="text-3xl font-bold text-[#805827] mb-2">My Account</h1>
 
           <p className="text-slate-600 mb-6">
             {error || "No user is signed in."}
@@ -73,7 +71,6 @@ export default function Account() {
   return (
     <section className="relative min-h-screen overflow-hidden bg-slate-800 flex items-center justify-center px-4">
       <div className="w-full max-w-md bg-white rounded-2xl shadow-lg p-8">
-
         <div className="text-center mb-8">
           <img
             src="/Heading.png"
@@ -81,9 +78,7 @@ export default function Account() {
             className="w-20 h-15 mx-auto mb-3"
           />
 
-          <h1 className="text-3xl font-bold text-[#805827]">
-            My Account
-          </h1>
+          <h1 className="text-3xl font-bold text-[#805827]">My Account</h1>
         </div>
 
         <div className="space-y-5">
@@ -122,7 +117,6 @@ export default function Account() {
             Logout
           </button>
         </div>
-
       </div>
     </section>
   );
