@@ -14,7 +14,7 @@ import Signup from "./pages/Signup";
 function App() {
   return (
     <BrowserRouter>
-      <div className="min-h-screen bg-stone-200 text-slate-800 pt-16">
+      <div className="min-h-screen bg-stone-200 text-slate-800 pt-17">
         <Navbar />
 
         <Routes>
