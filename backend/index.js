@@ -1,45 +1,28 @@
 import express from "express";
-import userRoutes from "./routes/users.js";
-import authRouter from "./routes/auth.js";
-import log from "./middlewares/logger.js";
-import cookieParser from "cookie-parser";
 import mongoose from "mongoose";
-import "dotenv/config";
+import dotenv from "dotenv";
 import cors from "cors";
+import userRoutes from "./routes/userRoutes.js";
+
+dotenv.config();
 
 const app = express();
-const PORT = process.env.PORT || 4000;
 
-const connectDB = async () => {
-  try {
-    await mongoose.connect(process.env.DATABASE_URL);
-    console.log("Connected to database");
-  } catch (err) {
-    console.log(`Error connecting to database ${err}`);
-    process.exit(1);
-  }
-};
-
-connectDB();
-
+app.use(cors());
 app.use(express.json());
-app.use(cookieParser());
-app.use(
-  cors({
-    credentials: true,
-    origin: process.env.ALLOWED_ORIGIN,
-  }),
-);
-app.use(log);
 
-app.get("/api", (req, res) => res.json({ message: "API is working" }));
+app.use("/users", userRoutes);
 
-app.use("/api/users", userRoutes);
+mongoose.connect(process.env.DB_URL)
+  .then(() => console.log("Connected to MongoDB"))
+  .catch((err) => console.error("Error connecting to MongoDB:", err));
 
-app.use("/api/auth", authRouter);
+const port = process.env.PORT || 4000;
 
-app.listen(PORT, () => {
-  console.log(`Server listening on port: ${PORT}`);
+app.get("/", (req, res) => {
+  res.status(200).json({ message: "Hello World" });
 });
 
-export default app;
+app.listen(port, () => {
+  console.log(`Server is running on port ${port}`);
+});
