@@ -1,15 +1,15 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Navbar from "./components/Navbar";
-import Home from "./components/Home";
-import NotificationsPage from "./components/NotificationsPage";
-import ImportantDates from "./components/ImportantDates";
-import Circulars from "./components/Circulars";
-import Assessment from "./components/Assessment";
-import Information from "./components/Information";
-import Account from "./components/Account";
+import Home from "./pages/Home";
+import NotificationsPage from "./pages/NotificationsPage";
+import ImportantDates from "./pages/ImportantDates";
+import Circulars from "./pages/Circulars";
+import Assessment from "./pages/Assessment";
+import Information from "./pages/Information";
+import Account from "./pages/Account";
 import Footer from "./components/Footer";
-import Login from "./components/Login";
-import Signup from "./components/Signup";
+import Login from "./pages/Login";
+import Signup from "./pages/Signup";
 
 function App() {
   return (
