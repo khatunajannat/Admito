@@ -117,8 +117,11 @@ function NotificationItem({ n }) {
 
 export default function NotificationsPage() {
   return (
-    <div className="min-h-screen bg-slate-50 pt-20 sm:pt-24 md:pt-28 lg:pt-32">
+    <div className="min-h-screen bg-stone-200 pt-20 sm:pt-24 md:pt-28 lg:pt-32">
       {/* Page header */}
+      <div className="pointer-events-none absolute -top-20 -right-20 h-80 w-80 rounded-full border border-amber-700"></div>
+      <div className="pointer-events-none absolute top-10 right-5 h-52 w-52 rounded-full border border-gold/15"></div>
+
       <div className="mx-auto max-w-3xl px-6 pb-6">
         <div className="mb-1 flex items-center justify-between">
           <h1 className="text-3xl font-semibold text-slate-800">

@@ -1,7 +1,15 @@
+import { Link } from "react-router-dom";
+
 export default function Hero() {
+  const scrollToFeatures = (e) => {
+    e.preventDefault();
+    document.getElementById("features")?.scrollIntoView({ behavior: "smooth" });
+  };
+
   return (
     <section className="relative overflow-hidden bg-gradient-to-b from-navy to-navy-light">
-      <div className="pointer-events-none absolute -top-20 -right-20 h-80 w-80 rounded-full border border-gold/20"></div>
+      {/* Decorative circles */}
+      <div className="pointer-events-none absolute -top-20 -right-20 h-80 w-80 rounded-full border border-amber-700"></div>
       <div className="pointer-events-none absolute top-10 right-5 h-52 w-52 rounded-full border border-gold/15"></div>
 
       <div className="relative py-16 px-4 mx-auto max-w-screen-xl text-center lg:py-24 lg:px-12">
@@ -18,7 +26,7 @@ export default function Hero() {
           </span>
           <svg
             className="ml-2 w-5 h-5"
-            fill="currentColor"
+            fill="slate-800 hover:amber-700 transition"
             viewBox="0 0 20 20"
             xmlns="http://www.w3.org/2000/svg"
           >
@@ -32,8 +40,10 @@ export default function Hero() {
 
         <h1 className="font-display mb-4 text-4xl font-semibold tracking-tight leading-tight text-slate-800 md:text-5xl lg:text-6xl">
           Welcome to{" "}
-          <span className="italic text-slate-800 font-medium">Admito</span> —
-          begin your session here
+          <span className="italic text-slate-800 hover:text-amber-700 transition font-medium">
+            Admito
+          </span>{" "}
+          — begin your session here
         </h1>
 
         <p className="mb-8 text-lg font-normal text-amber-700 lg:text-xl sm:px-16 xl:px-48">
@@ -43,7 +53,8 @@ export default function Hero() {
 
         <div className="flex flex-col mb-12 lg:mb-20 space-y-4 sm:flex-row sm:justify-center sm:space-y-0 sm:space-x-4">
           <a
-            href="#"
+            href="#features"
+            onClick={scrollToFeatures}
             className="inline-flex justify-center items-center py-3 px-6 text-sm font-semibold text-center text-slate-soft rounded\\-lg bg-gold hover:-translate-y-0.5 shadow-lg shadow-gold/25 transition"
           >
             Visit Site
@@ -60,8 +71,8 @@ export default function Hero() {
               ></path>
             </svg>
           </a>
-          <a
-            href="#"
+          <Link
+            to="/login"
             className="inline-flex justify-center items-center py-3 px-6 text-sm font-semibold text-center text-slate-soft rounded\\-lg bg-gold hover:-translate-y-0.5 shadow-lg shadow-gold/25 transition"
           >
             Login/Sign-Up
@@ -77,7 +88,7 @@ export default function Hero() {
                 clipRule="evenodd"
               ></path>
             </svg>
-          </a>
+          </Link>
         </div>
 
         <div className="px-4 mx-auto text-center md:max-w-screen-md lg:max-w-screen-lg lg:px-36">

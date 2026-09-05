@@ -12,11 +12,16 @@ export default function Navbar() {
             to="/"
             className="flex items-center space-x-1 group cursor-pointer"
           >
-            <div>
+            <div className="relative w-10 h-10 sm:w-8 sm:h-8">
               <img
                 src="/Heading.png"
                 alt="Admito"
-                className="w-10 h-10 sm:w-8 sm:h-8"
+                className="absolute inset-0 w-full h-full object-contain group-hover:opacity-0"
+              />
+              <img
+                src="/HeadingYellow.png"
+                alt="Admito"
+                className="absolute inset-0 w-full h-full object-contain opacity-0 group-hover:opacity-100"
               />
             </div>
             <span className="text-lg sm:text-xl md:text-2xl font-medium">
@@ -28,21 +33,21 @@ export default function Navbar() {
 
           {/* nav links */}
           <div className="flex items-center space-x-6 lg:space-x-8 text-[#805827] font-medium text-sm sm:text-base md:text-lg">
-            <a href="#Circular" className="text-[#805827] hover:text-[#FFD700]">
+            <Link to="/circulars" className="text-[#805827] hover:text-[#FFD700]">
               Circular
-            </a>
-            <a
-              href="#Assessment"
+            </Link>
+            <Link
+              to="/assessment"
               className="text-[#805827] hover:text-[#FFD700]"
             >
               Assessment
-            </a>
-            <a
-              href="#Information"
+            </Link>
+            <Link
+              to="/information"
               className="text-[#805827] hover:text-[#FFD700]"
             >
               Information
-            </a>
+            </Link>
 
             {/* Bell -> routes to /notifications */}
             <Link
@@ -66,6 +71,25 @@ export default function Navbar() {
                   {unreadCount}
                 </span>
               )}
+            </Link>
+
+            {/* Account -> routes to /account */}
+            <Link
+              to="/account"
+              className="text-[#805827] hover:text-[#FFD700]"
+              aria-label="Account"
+            >
+              <svg
+                className="w-6 h-6 transition-colors duration-300"
+                viewBox="0 0 24 24"
+                fill="currentColor"
+              >
+                <path
+                  fillRule="evenodd"
+                  d="M18.685 19.097A9.723 9.723 0 0021.75 12c0-5.385-4.365-9.75-9.75-9.75S2.25 6.615 2.25 12a9.723 9.723 0 003.065 7.097A9.716 9.716 0 0012 21.75a9.716 9.716 0 006.685-2.653zm-12.54-1.285A7.486 7.486 0 0112 15a7.486 7.486 0 015.855 2.812A8.224 8.224 0 0112 20.25a8.224 8.224 0 01-5.855-2.438zM15.75 9a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0z"
+                  clipRule="evenodd"
+                />
+              </svg>
             </Link>
           </div>
         </div>
