@@ -1,14 +1,23 @@
 import { Link } from "react-router-dom";
+import { useState } from "react";
 
 export default function Hero() {
+  const [isLoggedIn, setIsLoggedIn] = useState(
+    () => localStorage.getItem("isLoggedIn") === "true"
+  );
+
   const scrollToFeatures = (e) => {
     e.preventDefault();
     document.getElementById("features")?.scrollIntoView({ behavior: "smooth" });
   };
 
+  const handleLogout = () => {
+    localStorage.removeItem("isLoggedIn");
+    setIsLoggedIn(false);
+  };
+
   return (
     <section className="relative overflow-hidden bg-gradient-to-b from-navy to-navy-light">
-      {/* Decorative circles */}
       <div className="pointer-events-none absolute -top-20 -right-20 h-80 w-80 rounded-full border border-amber-700"></div>
       <div className="pointer-events-none absolute top-10 right-5 h-52 w-52 rounded-full border border-gold/15"></div>
 
@@ -51,44 +60,80 @@ export default function Hero() {
           admission — circulars, status, and important dates, all in one place.
         </p>
 
-        <div className="flex flex-col mb-12 lg:mb-20 space-y-4 sm:flex-row sm:justify-center sm:space-y-0 sm:space-x-4">
-          <a
-            href="#features"
-            onClick={scrollToFeatures}
-            className="inline-flex justify-center items-center py-3 px-6 text-sm font-semibold text-center text-slate-soft rounded\\-lg bg-gold hover:-translate-y-0.5 shadow-lg shadow-gold/25 transition"
-          >
-            Visit Site
-            <svg
-              className="ml-2 -mr-1 w-5 h-5"
-              fill="currentColor"
-              viewBox="0 0 20 20"
-              xmlns="http://www.w3.org/2000/svg"
+        <div className="flex flex-col mb-12 lg:mb-20 min-h-[52px] items-center justify-center space-y-4 sm:flex-row sm:space-y-0 sm:space-x-4">
+          {!isLoggedIn && (
+            <a
+              href="#features"
+              onClick={scrollToFeatures}
+              className="inline-flex justify-center items-center py-3 px-6 text-sm font-semibold text-center text-slate-soft rounded-lg bg-gold hover:-translate-y-0.5 shadow-lg shadow-gold/25 transition"
             >
-              <path
-                fillRule="evenodd"
-                d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z"
-                clipRule="evenodd"
-              ></path>
-            </svg>
-          </a>
-          <Link
-            to="/login"
-            className="inline-flex justify-center items-center py-3 px-6 text-sm font-semibold text-center text-slate-soft rounded\\-lg bg-gold hover:-translate-y-0.5 shadow-lg shadow-gold/25 transition"
-          >
-            Login/Sign-Up
-            <svg
-              className="ml-2 -mr-1 w-5 h-5"
-              fill="currentColor"
-              viewBox="0 0 20 20"
-              xmlns="http://www.w3.org/2000/svg"
+              Visit Site
+              <svg
+                className="ml-2 -mr-1 w-5 h-5"
+                fill="currentColor"
+                viewBox="0 0 20 20"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  fillRule="evenodd"
+                  d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z"
+                  clipRule="evenodd"
+                ></path>
+              </svg>
+            </a>
+          )}
+
+          {!isLoggedIn && (
+            <Link
+              to="/login"
+              className="inline-flex justify-center items-center py-3 px-6 text-sm font-semibold text-center text-slate-soft rounded-lg bg-gold hover:-translate-y-0.5 shadow-lg shadow-gold/25 transition"
             >
-              <path
-                fillRule="evenodd"
-                d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z"
-                clipRule="evenodd"
-              ></path>
-            </svg>
-          </Link>
+              Login/Sign-Up
+              <svg
+                className="ml-2 -mr-1 w-5 h-5"
+                fill="currentColor"
+                viewBox="0 0 20 20"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  fillRule="evenodd"
+                  d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z"
+                  clipRule="evenodd"
+                ></path>
+              </svg>
+            </Link>
+          )}
+
+          {isLoggedIn && (
+            <a
+              href="#features"
+              onClick={scrollToFeatures}
+              className="inline-flex justify-center items-center py-3 px-6 text-sm font-semibold text-center text-slate-soft rounded-lg bg-gold hover:-translate-y-0.5 shadow-lg shadow-gold/25 transition"
+            >
+              Visit Site
+              <svg
+                className="ml-2 -mr-1 w-5 h-5"
+                fill="currentColor"
+                viewBox="0 0 20 20"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  fillRule="evenodd"
+                  d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z"
+                  clipRule="evenodd"
+                ></path>
+              </svg>
+            </a>
+          )}
+
+          {isLoggedIn && (
+            <button
+              onClick={handleLogout}
+              className="inline-flex justify-center items-center py-3 px-6 text-sm font-semibold text-center text-slate-soft rounded-lg bg-gold hover:-translate-y-0.5 shadow-lg shadow-gold/25 transition"
+            >
+              Logout
+            </button>
+          )}
         </div>
 
         <div className="px-4 mx-auto text-center md:max-w-screen-md lg:max-w-screen-lg lg:px-36">
