@@ -83,18 +83,30 @@ export default function Account() {
 
         <div className="space-y-5">
           <div>
-            <p className="text-sm font-medium text-slate-500">Name</p>
-            <p className="text-lg text-slate-800">{user.name}</p>
+            <p className="text-sm font-medium text-slate-500">
+              Name
+            </p>
+            <p className="text-lg text-slate-800">
+              {user.name}
+            </p>
           </div>
 
           <div>
-            <p className="text-sm font-medium text-slate-500">Phone</p>
-            <p className="text-lg text-slate-800">{user.phone}</p>
+            <p className="text-sm font-medium text-slate-500">
+              Phone
+            </p>
+            <p className="text-lg text-slate-800">
+              {user.phone}
+            </p>
           </div>
 
           <div>
-            <p className="text-sm font-medium text-slate-500">Email</p>
-            <p className="text-lg text-slate-800">{user.email}</p>
+            <p className="text-sm font-medium text-slate-500">
+              Email
+            </p>
+            <p className="text-lg text-slate-800">
+              {user.email}
+            </p>
           </div>
 
           <button
