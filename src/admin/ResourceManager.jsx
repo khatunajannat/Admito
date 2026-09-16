@@ -18,8 +18,7 @@ export default function ResourceManager({
   const [form, setForm] = useState({});
   const [saving, setSaving] = useState(false);
 
-  const emptyForm = () =>
-    Object.fromEntries(fields.map((f) => [f.name, ""]));
+  const emptyForm = () => Object.fromEntries(fields.map((f) => [f.name, ""]));
 
   const load = async () => {
     setLoading(true);
@@ -45,7 +44,7 @@ export default function ResourceManager({
     const next = {};
     fields.forEach((f) => {
       const v = item[f.name];
-      next[f.name] = f.type === "date" && v ? v.slice(0, 10) : v ?? "";
+      next[f.name] = f.type === "date" && v ? v.slice(0, 10) : (v ?? "");
     });
     setForm(next);
   };
@@ -102,7 +101,9 @@ export default function ResourceManager({
       <h2 className="text-lg font-semibold text-slate-800 mb-4">{title}</h2>
 
       {error && (
-        <p className="mb-4 rounded-lg bg-red-50 text-red-700 text-sm px-3 py-2">{error}</p>
+        <p className="mb-4 rounded-lg bg-red-50 text-red-700 text-sm px-3 py-2">
+          {error}
+        </p>
       )}
 
       {/* Form */}
@@ -167,7 +168,9 @@ export default function ResourceManager({
       {loading ? (
         <p className="text-sm text-slate-400 py-6 text-center">Loading...</p>
       ) : items.length === 0 ? (
-        <p className="text-sm text-slate-400 py-6 text-center">No entries yet.</p>
+        <p className="text-sm text-slate-400 py-6 text-center">
+          No entries yet.
+        </p>
       ) : (
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
