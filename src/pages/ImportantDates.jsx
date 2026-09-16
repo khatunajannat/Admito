@@ -1,96 +1,6 @@
-import { useState, useMemo } from "react";
+import { useState, useEffect, useMemo } from "react";
 
-//Dummy data
-const events = [
-  {
-    id: 1,
-    title: "DU Kha Unit Form Fill-up Starts",
-    university: "Dhaka University",
-    type: "public",
-    category: "form",
-    date: "2026-08-25",
-  },
-  {
-    id: 2,
-    title: "NSU Fall Admission Deadline",
-    university: "North South University",
-    type: "private",
-    category: "deadline",
-    date: "2026-08-28",
-  },
-  {
-    id: 3,
-    title: "BUET Admission Test",
-    university: "BUET",
-    type: "public",
-    category: "exam",
-    date: "2026-09-05",
-  },
-  {
-    id: 4,
-    title: "BRAC University Result Publication",
-    university: "BRAC University",
-    type: "private",
-    category: "result",
-    date: "2026-09-08",
-  },
-  {
-    id: 5,
-    title: "RU Ka Unit Exam",
-    university: "Rajshahi University",
-    type: "public",
-    category: "exam",
-    date: "2026-09-12",
-  },
-  {
-    id: 6,
-    title: "AIUB Spring Form Fill-up Ends",
-    university: "AIUB",
-    type: "private",
-    category: "form",
-    date: "2026-09-15",
-  },
-  {
-    id: 7,
-    title: "CU Admission Result",
-    university: "Chittagong University",
-    type: "public",
-    category: "result",
-    date: "2026-09-20",
-  },
-  {
-    id: 8,
-    title: "EWU Application Deadline",
-    university: "East West University",
-    type: "private",
-    category: "deadline",
-    date: "2026-09-22",
-  },
-  {
-    id: 9,
-    title: "AUST Fall Admission Form Fill-up Starts",
-    university: "Ahsanullah University of Science and Technology (AUST)",
-    type: "private",
-    category: "form",
-    date: "2026-08-30",
-  },
-  {
-    id: 10,
-    title: "AUST Admission Test",
-    university: "Ahsanullah University of Science and Technology (AUST)",
-    type: "private",
-    category: "exam",
-    date: "2026-09-18",
-  },
-  {
-    id: 11,
-    title: "AUST Admission Result Publication",
-    university: "Ahsanullah University of Science and Technology (AUST)",
-    type: "private",
-    category: "result",
-    date: "2026-09-25",
-  },
-];
+const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000/api";
 
 const categoryStyles = {
   form: {
@@ -117,6 +27,7 @@ const categoryStyles = {
 
 function EventCard({ e }) {
   const cat = categoryStyles[e.category];
+  const d = new Date(e.date);
   return (
     <div className="relative flex gap-4 rounded-xl border border-slate-200 bg-white p-4 transition hover:shadow-md">
       <span
@@ -124,13 +35,9 @@ function EventCard({ e }) {
       />
       <div className="ml-1 flex flex-col items-center justify-center w-14 shrink-0 rounded-lg bg-slate-50 py-2">
         <span className="text-xs font-semibold text-slate-400 uppercase">
-          {new Date(e.date + "T00:00:00").toLocaleDateString("en-US", {
-            month: "short",
-          })}
+          {d.toLocaleDateString("en-US", { month: "short" })}
         </span>
-        <span className="text-xl font-bold text-slate-800">
-          {new Date(e.date + "T00:00:00").getDate()}
-        </span>
+        <span className="text-xl font-bold text-slate-800">{d.getDate()}</span>
       </div>
       <div className="flex-1">
         <div className="flex items-start justify-between gap-2">
@@ -168,7 +75,7 @@ function CalendarView({ events, monthDate, setMonthDate }) {
   const eventsByDay = useMemo(() => {
     const map = {};
     events.forEach((e) => {
-      const d = new Date(e.date + "T00:00:00");
+      const d = new Date(e.date);
       if (d.getFullYear() === year && d.getMonth() === month) {
         const day = d.getDate();
         map[day] = map[day] ? [...map[day], e] : [e];
@@ -223,7 +130,7 @@ function CalendarView({ events, monthDate, setMonthDate }) {
               <div className="mt-1 flex flex-wrap gap-0.5">
                 {(eventsByDay[day] || []).slice(0, 3).map((e) => (
                   <span
-                    key={e.id}
+                    key={e._id}
                     title={e.title}
                     className={`h-1.5 w-1.5 rounded-full ${categoryStyles[e.category].dot}`}
                   />
@@ -247,9 +154,38 @@ function CalendarView({ events, monthDate, setMonthDate }) {
 }
 
 export default function ImportantDates() {
+  const [events, setEvents] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+
   const [view, setView] = useState("list"); // "list" | "calendar"
   const [filter, setFilter] = useState("all"); // "all" | "public" | "private"
-  const [monthDate, setMonthDate] = useState(new Date(2026, 7, 1)); // Aug 2026
+  const [monthDate, setMonthDate] = useState(new Date());
+
+  useEffect(() => {
+    const controller = new AbortController();
+
+    async function loadEvents() {
+      setLoading(true);
+      setError("");
+      try {
+        const res = await fetch(`${API_URL}/important-dates`, { signal: controller.signal });
+        if (!res.ok) throw new Error("Failed to load important dates");
+        const data = await res.json();
+        setEvents(data);
+        if (data.length > 0) {
+          setMonthDate(new Date(data[0].date));
+        }
+      } catch (err) {
+        if (err.name !== "AbortError") setError(err.message);
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    loadEvents();
+    return () => controller.abort();
+  }, []);
 
   const filtered = events
     .filter((e) => filter === "all" || e.type === filter)
@@ -316,22 +252,31 @@ export default function ImportantDates() {
 
       {/* Content */}
       <div className="mx-auto max-w-4xl px-6 pb-20">
-        {view === "list" ? (
-          <div className="space-y-3">
-            {filtered.length === 0 ? (
-              <p className="py-10 text-center text-sm text-slate-400">
-                No events found for this filter.
-              </p>
-            ) : (
-              filtered.map((e) => <EventCard key={e.id} e={e} />)
-            )}
-          </div>
-        ) : (
-          <CalendarView
-            events={filtered}
-            monthDate={monthDate}
-            setMonthDate={setMonthDate}
-          />
+        {loading && (
+          <p className="py-10 text-center text-sm text-slate-400">Loading important dates...</p>
+        )}
+        {!loading && error && (
+          <p className="text-sm text-red-600 bg-red-50 rounded-lg px-4 py-3">{error}</p>
+        )}
+
+        {!loading && !error && (
+          view === "list" ? (
+            <div className="space-y-3">
+              {filtered.length === 0 ? (
+                <p className="py-10 text-center text-sm text-slate-400">
+                  No events found for this filter.
+                </p>
+              ) : (
+                filtered.map((e) => <EventCard key={e._id} e={e} />)
+              )}
+            </div>
+          ) : (
+            <CalendarView
+              events={filtered}
+              monthDate={monthDate}
+              setMonthDate={setMonthDate}
+            />
+          )
         )}
       </div>
     </div>

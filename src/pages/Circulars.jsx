@@ -1,102 +1,6 @@
-import { useState, useMemo } from "react";
-const CIRCULARS = [
-  {
-    id: 1,
-    university: "Dhaka University",
-    type: "public",
-    unit: "Ka Unit (Science)",
-    title: "Admission Test Notice — Session 2025-26",
-    publishedDate: "2026-08-10",
-    examDate: "2026-09-19",
-    applyDeadline: "2026-09-01",
-    status: "open",
-    link: "https://admission.eis.du.ac.bd",
-  },
-  {
-    id: 2,
-    university: "Jahangirnagar University",
-    type: "public",
-    unit: "A Unit (Science)",
-    title: "Undergraduate Admission Circular 2025-26",
-    publishedDate: "2026-08-05",
-    examDate: "2026-09-25",
-    applyDeadline: "2026-09-05",
-    status: "open",
-    link: "https://juniv.edu",
-  },
-  {
-    id: 3,
-    university: "BUET",
-    type: "public",
-    unit: "Undergraduate Admission",
-    title: "Admission Test Circular — 2025-26",
-    publishedDate: "2026-07-28",
-    examDate: "2026-09-12",
-    applyDeadline: "2026-08-20",
-    status: "closed",
-    link: "https://ugadmission.buet.ac.bd",
-  },
-  {
-    id: 4,
-    university: "North South University",
-    type: "private",
-    unit: "Undergraduate Programs",
-    title: "Fall 2026 Admission — Rolling Applications",
-    publishedDate: "2026-08-15",
-    examDate: null,
-    applyDeadline: "2026-10-01",
-    status: "open",
-    link: "https://www.northsouth.edu",
-  },
-  {
-    id: 5,
-    university: "BRAC University",
-    type: "private",
-    unit: "Undergraduate Programs",
-    title: "Fall 2026 Semester Admission Circular",
-    publishedDate: "2026-08-12",
-    examDate: null,
-    applyDeadline: "2026-09-28",
-    status: "open",
-    link: "https://www.bracu.ac.bd",
-  },
-  {
-    id: 6,
-    university: "Rajshahi University",
-    type: "public",
-    unit: "Unit A (Science)",
-    title: "Admission Test Notice — 2025-26 Session",
-    publishedDate: "2026-08-02",
-    examDate: "2026-09-18",
-    applyDeadline: "2026-08-30",
-    status: "upcoming",
-    link: "https://ru.ac.bd",
-  },
-  {
-    id: 7,
-    university: "Ahsanullah University of Science and Technology",
-    type: "private",
-    unit: "B.Sc in CSE / EEE / Others",
-    title: "Fall 2026 Admission Circular",
-    publishedDate: "2026-08-14",
-    examDate: "2026-09-06",
-    applyDeadline: "2026-09-03",
-    status: "open",
-    link: "https://aust.edu",
-  },
-  {
-    id: 8,
-    university: "Chittagong University",
-    type: "public",
-    unit: "B Unit (Arts & Social Science)",
-    title: "Undergraduate Admission Circular 2025-26",
-    publishedDate: "2026-07-30",
-    examDate: "2026-09-20",
-    applyDeadline: "2026-08-25",
-    status: "closed",
-    link: "https://cu.ac.bd",
-  },
-];
+import { useState, useEffect, useMemo } from "react";
+
+const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000/api";
 
 // Flowbite badge color patterns: https://flowbite.com/docs/components/badge/
 const STATUS_BADGE = {
@@ -132,23 +36,51 @@ function formatDate(dateStr) {
 }
 
 export default function Circulars() {
+  const [circulars, setCirculars] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+
   const [query, setQuery] = useState("");
   const [typeFilter, setTypeFilter] = useState("all");
   const [statusFilter, setStatusFilter] = useState("all");
   const [filterOpen, setFilterOpen] = useState(false);
 
+  useEffect(() => {
+    const controller = new AbortController();
+
+    async function loadCirculars() {
+      setLoading(true);
+      setError("");
+      try {
+        const res = await fetch(`${API_URL}/circulars`, { signal: controller.signal });
+        if (!res.ok) throw new Error("Failed to load circulars");
+        const data = await res.json();
+        setCirculars(data);
+      } catch (err) {
+        if (err.name !== "AbortError") setError(err.message);
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    loadCirculars();
+    return () => controller.abort();
+  }, []);
+
   const filtered = useMemo(() => {
-    return CIRCULARS.filter((c) => {
-      const matchesQuery =
-        query.trim() === "" ||
-        c.university.toLowerCase().includes(query.toLowerCase()) ||
-        c.title.toLowerCase().includes(query.toLowerCase()) ||
-        c.unit.toLowerCase().includes(query.toLowerCase());
-      const matchesType = typeFilter === "all" || c.type === typeFilter;
-      const matchesStatus = statusFilter === "all" || c.status === statusFilter;
-      return matchesQuery && matchesType && matchesStatus;
-    }).sort((a, b) => new Date(b.publishedDate) - new Date(a.publishedDate));
-  }, [query, typeFilter, statusFilter]);
+    return circulars
+      .filter((c) => {
+        const matchesQuery =
+          query.trim() === "" ||
+          c.university.toLowerCase().includes(query.toLowerCase()) ||
+          c.title.toLowerCase().includes(query.toLowerCase()) ||
+          c.unit.toLowerCase().includes(query.toLowerCase());
+        const matchesType = typeFilter === "all" || c.type === typeFilter;
+        const matchesStatus = statusFilter === "all" || c.status === statusFilter;
+        return matchesQuery && matchesType && matchesStatus;
+      })
+      .sort((a, b) => new Date(b.publishedDate) - new Date(a.publishedDate));
+  }, [circulars, query, typeFilter, statusFilter]);
 
   const activeFilterCount =
     (typeFilter !== "all" ? 1 : 0) + (statusFilter !== "all" ? 1 : 0);
@@ -285,79 +217,91 @@ export default function Circulars() {
           )}
         </div>
 
-        {/* Results count */}
-        <p className="text-sm text-slate-500 mb-4">
-          Showing {filtered.length} of {CIRCULARS.length} circulars
-        </p>
+        {/* Loading / error states */}
+        {loading && (
+          <p className="text-sm text-slate-400 py-10 text-center">Loading circulars...</p>
+        )}
+        {!loading && error && (
+          <p className="text-sm text-red-600 bg-red-50 rounded-lg px-4 py-3 mb-4">{error}</p>
+        )}
 
-        {/* Flowbite card grid */}
-        <div className="grid gap-4 md:grid-cols-2">
-          {filtered.map((c) => (
-            <div
-              key={c.id}
-              className="block bg-white border border-gray-200 rounded-lg shadow-sm p-5 hover:bg-gray-50 transition-colors duration-150"
-            >
-              <div className="flex items-start justify-between gap-3 mb-3">
-                <div>
-                  <h5 className="text-base font-semibold tracking-tight text-gray-900">
-                    {c.university}
-                  </h5>
-                  <p className="text-xs text-gray-500 mt-0.5">{c.unit}</p>
+        {!loading && !error && (
+          <>
+            {/* Results count */}
+            <p className="text-sm text-slate-500 mb-4">
+              Showing {filtered.length} of {circulars.length} circulars
+            </p>
+
+            {/* Flowbite card grid */}
+            <div className="grid gap-4 md:grid-cols-2">
+              {filtered.map((c) => (
+                <div
+                  key={c._id}
+                  className="block bg-white border border-gray-200 rounded-lg shadow-sm p-5 hover:bg-gray-50 transition-colors duration-150"
+                >
+                  <div className="flex items-start justify-between gap-3 mb-3">
+                    <div>
+                      <h5 className="text-base font-semibold tracking-tight text-gray-900">
+                        {c.university}
+                      </h5>
+                      <p className="text-xs text-gray-500 mt-0.5">{c.unit}</p>
+                    </div>
+                    <span className={`shrink-0 inline-flex items-center gap-1.5 text-xs font-medium px-2.5 py-1 rounded ${STATUS_BADGE[c.status]}`}>
+                      <span className={`w-1.5 h-1.5 rounded-full ${STATUS_DOT[c.status]}`}></span>
+                      {STATUS_LABEL[c.status]}
+                    </span>
+                  </div>
+
+                  <span className={`inline-block text-xs font-medium px-2 py-0.5 rounded mb-3 capitalize ${TYPE_BADGE[c.type]}`}>
+                    {c.type}
+                  </span>
+
+                  <p className="text-sm text-gray-700 mb-4">{c.title}</p>
+
+                  <div className="grid grid-cols-2 gap-y-1.5 gap-x-3 text-xs text-gray-500 mb-4">
+                    <div className="flex items-center gap-1.5">
+                      <svg className="w-3.5 h-3.5 text-[#805827]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.6" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                      </svg>
+                      Published: {formatDate(c.publishedDate)}
+                    </div>
+                    <div className="flex items-center gap-1.5">
+                      <svg className="w-3.5 h-3.5 text-[#805827]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.6" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                      </svg>
+                      Exam: {formatDate(c.examDate)}
+                    </div>
+                    <div className="flex items-center gap-1.5 col-span-2">
+                      <svg className="w-3.5 h-3.5 text-[#805827]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.6" d="M5 13l4 4L19 7" />
+                      </svg>
+                      Apply by: {formatDate(c.applyDeadline)}
+                    </div>
+                  </div>
+
+                  {/* Flowbite outline button pattern */}
+                  <a
+                    href={c.link}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center text-sm font-medium text-center text-[#805827] hover:text-white border border-[#805827] hover:bg-[#805827] focus:ring-4 focus:outline-none focus:ring-[#805827]/30 rounded-lg px-3 py-1.5 transition-colors duration-150"
+                  >
+                    View official circular
+                    <svg className="rtl:rotate-180 w-3.5 h-3.5 ms-2" fill="none" stroke="currentColor" viewBox="0 0 14 10">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M1 5h12m0 0L9 1m4 4L9 9" />
+                    </svg>
+                  </a>
                 </div>
-                <span className={`shrink-0 inline-flex items-center gap-1.5 text-xs font-medium px-2.5 py-1 rounded ${STATUS_BADGE[c.status]}`}>
-                  <span className={`w-1.5 h-1.5 rounded-full ${STATUS_DOT[c.status]}`}></span>
-                  {STATUS_LABEL[c.status]}
-                </span>
-              </div>
+              ))}
 
-              <span className={`inline-block text-xs font-medium px-2 py-0.5 rounded mb-3 capitalize ${TYPE_BADGE[c.type]}`}>
-                {c.type}
-              </span>
-
-              <p className="text-sm text-gray-700 mb-4">{c.title}</p>
-
-              <div className="grid grid-cols-2 gap-y-1.5 gap-x-3 text-xs text-gray-500 mb-4">
-                <div className="flex items-center gap-1.5">
-                  <svg className="w-3.5 h-3.5 text-[#805827]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.6" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                  </svg>
-                  Published: {formatDate(c.publishedDate)}
+              {filtered.length === 0 && (
+                <div className="col-span-full text-center py-16 text-gray-400">
+                  No circulars match your search.
                 </div>
-                <div className="flex items-center gap-1.5">
-                  <svg className="w-3.5 h-3.5 text-[#805827]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.6" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                  </svg>
-                  Exam: {formatDate(c.examDate)}
-                </div>
-                <div className="flex items-center gap-1.5 col-span-2">
-                  <svg className="w-3.5 h-3.5 text-[#805827]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.6" d="M5 13l4 4L19 7" />
-                  </svg>
-                  Apply by: {formatDate(c.applyDeadline)}
-                </div>
-              </div>
-
-              {/* Flowbite outline button pattern */}
-              <a
-                href={c.link}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center text-sm font-medium text-center text-[#805827] hover:text-white border border-[#805827] hover:bg-[#805827] focus:ring-4 focus:outline-none focus:ring-[#805827]/30 rounded-lg px-3 py-1.5 transition-colors duration-150"
-              >
-                View official circular
-                <svg className="rtl:rotate-180 w-3.5 h-3.5 ms-2" fill="none" stroke="currentColor" viewBox="0 0 14 10">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M1 5h12m0 0L9 1m4 4L9 9" />
-                </svg>
-              </a>
+              )}
             </div>
-          ))}
-
-          {filtered.length === 0 && (
-            <div className="col-span-full text-center py-16 text-gray-400">
-              No circulars match your search.
-            </div>
-          )}
-        </div>
+          </>
+        )}
       </div>
     </section>
   );
