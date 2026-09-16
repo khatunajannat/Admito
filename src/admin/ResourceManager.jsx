@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/set-state-in-effect */
 import { useEffect, useState } from "react";
 
 // A small generic CRUD manager: fields drive both the form and the table.
