@@ -10,6 +10,7 @@ import Account from "./pages/Account";
 import Footer from "./components/Footer";
 import Login from "./pages/Login";
 import Signup from "./pages/Signup";
+import Contact from "./pages/Contact";
 import AdminPanel from './admin/AdminPanel';
 
 function App() {
@@ -28,6 +29,7 @@ function App() {
           <Route path="/account" element={<Account />} />
           <Route path="/login" element={<Login />} />
           <Route path="/signup" element={<Signup />} />
+          <Route path="/contact" element={<Contact />} />
           <Route path="/admin" element={<AdminPanel />} />
         </Routes>
 

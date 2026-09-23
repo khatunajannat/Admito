@@ -1,3 +1,5 @@
+import { Link } from "react-router-dom";
+
 export default function Footer() {
   return (
     <footer className="p-4 bg-navy md:p-8 lg:p-10">
@@ -44,6 +46,7 @@ export default function Footer() {
               Home
             </a>
           </li>
+
           <li>
             <a
               href="#"
@@ -52,6 +55,7 @@ export default function Footer() {
               Circulars
             </a>
           </li>
+
           <li>
             <a
               href="#"
@@ -60,6 +64,7 @@ export default function Footer() {
               Application Status
             </a>
           </li>
+
           <li>
             <a
               href="#"
@@ -68,13 +73,14 @@ export default function Footer() {
               Important Dates
             </a>
           </li>
+
           <li>
-            <a
-              href="#"
+            <Link
+              to="/contact"
               className="mr-4 text-slate-800 hover:text-amber-700 md:mr-6"
             >
               Contact
-            </a>
+            </Link>
           </li>
         </ul>
 
