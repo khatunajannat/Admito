@@ -76,6 +76,14 @@ export default function Footer() {
               Contact
             </a>
           </li>
+          <li>
+             <a
+              href="#"
+              className="mr-4 text-slate-800 hover:text-amber-700 md:mr-6"
+            >
+              AboutUs
+            </a>
+           </li>
         </ul>
 
         <span className="text-sm text-slate-800 sm:text-center">
