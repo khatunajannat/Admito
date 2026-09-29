@@ -38,7 +38,7 @@ export default function Footer() {
         <ul className="flex flex-wrap justify-center items-center mb-6 text-white">
           <li>
             <a
-              href="#"
+              href="/"
               className="mr-4 text-slate-800 hover:text-amber-700 md:mr-6"
             >
               Home
