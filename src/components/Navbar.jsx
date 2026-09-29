@@ -23,7 +23,7 @@ export default function Navbar() {
                 className="absolute inset-0 w-full h-full object-contain opacity-0 group-hover:opacity-100"
               />
             </div>
-            <span className="text-lg sm:text-xl md:text-2xl font-medium">
+            <span className="text-lg sm:text-lg md:text-xl font-medium pr-5">
               <span className="text-[#805827] group-hover:text-[#FFD700]">
                 Admito
               </span>
