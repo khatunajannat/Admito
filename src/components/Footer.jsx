@@ -46,7 +46,7 @@ export default function Footer() {
           </li>
           <li>
             <a
-              href="#"
+              href="/circulars"
               className="mr-4 text-slate-800 hover:text-amber-700 md:mr-6"
             >
               Circulars
@@ -54,7 +54,7 @@ export default function Footer() {
           </li>
           <li>
             <a
-              href="#"
+              href="/application-status"
               className="mr-4 text-slate-800 hover:text-amber-700 md:mr-6"
             >
               Application Status
@@ -62,7 +62,7 @@ export default function Footer() {
           </li>
           <li>
             <a
-              href="#"
+              href="/important-dates"
               className="mr-4 text-slate-800 hover:text-amber-700 md:mr-6"
             >
               Important Dates
@@ -70,7 +70,7 @@ export default function Footer() {
           </li>
           <li>
             <a
-              href="#"
+              href="/contact"
               className="mr-4 text-slate-800 hover:text-amber-700 md:mr-6"
             >
               Contact
@@ -78,7 +78,7 @@ export default function Footer() {
           </li>
           <li>
              <a
-              href="#"
+              href="/about-us"
               className="mr-4 text-slate-800 hover:text-amber-700 md:mr-6"
             >
               AboutUs
