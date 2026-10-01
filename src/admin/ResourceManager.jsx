@@ -1,8 +1,6 @@
 /* eslint-disable react-hooks/set-state-in-effect */
 import { useEffect, useState } from "react";
 
-// A small generic CRUD manager: fields drive both the form and the table.
-// field: { name, label, type: "text"|"date"|"select", options?: string[], required? }
 export default function ResourceManager({
   title,
   fields,
@@ -18,7 +16,6 @@ export default function ResourceManager({
   const [editingId, setEditingId] = useState(null);
   const [form, setForm] = useState({});
   const [saving, setSaving] = useState(false);
-
   const emptyForm = () => Object.fromEntries(fields.map((f) => [f.name, ""]));
 
   const load = async () => {
@@ -65,7 +62,7 @@ export default function ResourceManager({
     setError("");
     try {
       const payload = { ...form };
-      // Send null instead of "" for optional date fields (e.g. examDate)
+         
       fields.forEach((f) => {
         if (f.type === "date" && !f.required && payload[f.name] === "") {
           payload[f.name] = null;
