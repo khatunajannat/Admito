@@ -34,8 +34,9 @@ export default function Login() {
       }
 
       setSuccess("Login successful!");
-      localStorage.setItem("isLoggedIn", "true");
+      localStorage.setItem("token", data.token);
       localStorage.setItem("userId", data.user.id);
+      window.dispatchEvent(new Event("auth-change"));
       setLoading(false);
 
       setTimeout(() => {

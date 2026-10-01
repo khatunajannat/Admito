@@ -11,6 +11,7 @@ import Footer from "./components/Footer";
 import Login from "./pages/Login";
 import Signup from "./pages/Signup";
 import AdminPanel from './admin/AdminPanel';
+import ProtectedRoute from "./components/ProtectedRoute";
 
 function App() {
   return (
@@ -20,12 +21,21 @@ function App() {
 
         <Routes>
           <Route path="/" element={<Home />} />
-          <Route path="/notifications" element={<NotificationsPage />} />
+          <Route
+            path="/notifications"
+            element={<ProtectedRoute><NotificationsPage /></ProtectedRoute>}
+          />
           <Route path="/important-dates" element={<ImportantDates />} />
           <Route path="/circulars" element={<Circulars />} />
-          <Route path="/assessment" element={<Assessment />} />
-          <Route path="/information" element={<Information />} />
-          <Route path="/account" element={<Account />} />
+          <Route
+            path="/assessment"
+            element={<ProtectedRoute><Assessment /></ProtectedRoute>}
+          />
+          <Route path="/information" element={<ProtectedRoute><Information /></ProtectedRoute>} />
+          <Route
+            path="/account"
+            element={<ProtectedRoute><Account /></ProtectedRoute>}
+          />
           <Route path="/login" element={<Login />} />
           <Route path="/signup" element={<Signup />} />
           <Route path="/admin" element={<AdminPanel />} />

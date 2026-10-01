@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { Link, NavLink, useLocation } from "react-router-dom";
+import { getToken } from "../utils/api";
 
 const links = [
   { to: "/circulars", label: "Circular" },
@@ -30,7 +31,15 @@ const UserIcon = () => (
 export default function Navbar() {
   const unreadCount = 3;
   const [open, setOpen] = useState(false);
+  const [loggedIn, setLoggedIn] = useState(!!getToken());
   const location = useLocation();
+
+  // keep login state in sync after login / logout
+  useEffect(() => {
+    const sync = () => setLoggedIn(!!getToken());
+    window.addEventListener("auth-change", sync);
+    return () => window.removeEventListener("auth-change", sync);
+  }, []);
 
   // route change hole menu auto close
   useEffect(() => {
@@ -107,8 +116,8 @@ export default function Navbar() {
             </Link>
 
             <Link
-              to="/account"
-              aria-label="Account"
+              to={loggedIn ? "/account" : "/login"}
+              aria-label={loggedIn ? "Account" : "Login"}
               className="text-[#805827] hover:text-[#FFD700] transition-colors"
             >
               <UserIcon />
@@ -169,8 +178,9 @@ export default function Navbar() {
               {l.label}
             </NavLink>
           ))}
+
           <Link
-            to="/account"
+            to={loggedIn ? "/account" : "/login"}
             className="flex items-center gap-2 py-3 text-[#805827] hover:text-[#FFD700]"
           >
             <UserIcon /> Account
