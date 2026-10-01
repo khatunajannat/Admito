@@ -1,4 +1,5 @@
 import { useState, useEffect, useMemo } from "react";
+import { Link } from "react-router-dom";
 
 const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000/api";
 
@@ -366,6 +367,7 @@ export default function Circulars() {
                     </div>
                   </div>
 
+                  <div className="flex flex-wrap items-center gap-2">
                   {/* Flowbite outline button pattern */}
                   <a
                     href={c.link}
@@ -388,6 +390,20 @@ export default function Circulars() {
                       />
                     </svg>
                   </a>
+
+                  {c.status === "closed" ? (
+                    <span className="inline-flex items-center text-sm font-medium text-gray-400 bg-gray-100 border border-gray-200 rounded-lg px-3 py-1.5 cursor-not-allowed">
+                      Applications closed
+                    </span>
+                  ) : (
+                    <Link
+                      to={`/apply/${c._id}`}
+                      className="inline-flex items-center text-sm font-medium text-white bg-[#805827] hover:bg-[#6b4620] focus:ring-4 focus:outline-none focus:ring-[#805827]/30 rounded-lg px-3 py-1.5 transition-colors duration-150"
+                    >
+                      Apply (demo)
+                    </Link>
+                  )}
+                  </div>
                 </div>
               ))}
 
