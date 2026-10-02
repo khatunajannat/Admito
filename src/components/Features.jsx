@@ -75,7 +75,7 @@ export default function Features() {
               email.
             </p>
             <Link
-              to="/status"
+              to="/applications"
               className="inline-flex items-center mt-3 text-sm font-medium text-[#805827] hover:text-[#FFD700]"
             >
               Check your status

@@ -13,6 +13,11 @@ const categoryStyles = {
     dot: "bg-red-500",
     badge: "bg-red-50 text-red-700",
   },
+  admit_card: {
+    label: "Admit Card",
+    dot: "bg-purple-500",
+    badge: "bg-purple-50 text-purple-700",
+  },
   exam: {
     label: "Exam Date",
     dot: "bg-[#FFD700]",

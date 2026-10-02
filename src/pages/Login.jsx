@@ -1,9 +1,11 @@
 import { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useLocation } from "react-router-dom";
 import { Eye, EyeOff } from "lucide-react";
 
 export default function Login() {
   const navigate = useNavigate();
+  const location = useLocation();
+  const redirectTo = location.state?.from?.pathname || "/";
   const [formData, setFormData] = useState({ email: "", password: "" });
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
@@ -40,7 +42,7 @@ export default function Login() {
       setLoading(false);
 
       setTimeout(() => {
-        navigate("/");
+        navigate(redirectTo, { replace: true });
       }, 1500);
     } catch (err) {
       setError(err.message);

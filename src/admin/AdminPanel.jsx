@@ -23,7 +23,7 @@ const eventFields = [
     name: "category",
     label: "Category",
     type: "select",
-    options: ["form", "deadline", "exam", "result"],
+    options: ["form", "deadline", "admit_card", "exam", "result"],
     required: true,
   },
   { name: "date", label: "Date", type: "date", required: true },

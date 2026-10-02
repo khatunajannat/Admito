@@ -5,6 +5,7 @@ import NotificationsPage from "./pages/NotificationsPage";
 import ImportantDates from "./pages/ImportantDates";
 import Circulars from "./pages/Circulars";
 import Apply from "./pages/Apply";
+import Applications from "./pages/Applications";
 import Assessment from "./pages/Assessment";
 import Information from "./pages/Information";
 import Account from "./pages/Account";
@@ -28,6 +29,10 @@ function App() {
           />
           <Route path="/important-dates" element={<ImportantDates />} />
           <Route path="/circulars" element={<Circulars />} />
+          <Route
+            path="/applications"
+            element={<ProtectedRoute><Applications /></ProtectedRoute>}
+          />
           <Route
             path="/apply/:circularId"
             element={<ProtectedRoute><Apply /></ProtectedRoute>}
