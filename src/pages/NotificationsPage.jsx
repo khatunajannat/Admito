@@ -176,6 +176,7 @@ export default function NotificationsPage() {
 
   // first load + every time a tab is clicked
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     load(filter, 1);
   }, [filter, load]);
 

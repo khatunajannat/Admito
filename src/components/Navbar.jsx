@@ -46,6 +46,7 @@ export default function Navbar() {
   // should just hide the badge, not redirect the visitor to /login.
   useEffect(() => {
     if (!loggedIn) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setUnreadCount(0);
       return;
     }
@@ -79,6 +80,7 @@ export default function Navbar() {
 
   // route change hole menu auto close
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setOpen(false);
   }, [location.pathname]);
 
