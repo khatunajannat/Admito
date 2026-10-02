@@ -29,7 +29,7 @@ const UserIcon = () => (
 );
 
 export default function Navbar() {
-  const unreadCount = 3;
+  const [unreadCount, setUnreadCount] = useState(0);
   const [open, setOpen] = useState(false);
   const [loggedIn, setLoggedIn] = useState(!!getToken());
   const location = useLocation();
@@ -40,6 +40,42 @@ export default function Navbar() {
     window.addEventListener("auth-change", sync);
     return () => window.removeEventListener("auth-change", sync);
   }, []);
+
+  // real unread count for the bell badge.
+  // Plain fetch (not apiFetch) on purpose: an expired token on a public page
+  // should just hide the badge, not redirect the visitor to /login.
+  useEffect(() => {
+    if (!loggedIn) {
+      setUnreadCount(0);
+      return;
+    }
+
+    let active = true;
+    const loadCount = async () => {
+      try {
+        const res = await fetch(
+          `${import.meta.env.VITE_API_URL}/api/notifications/unread-count`,
+          { headers: { Authorization: `Bearer ${getToken()}` } },
+        );
+        if (!res.ok) return;
+        const data = await res.json();
+        if (active) setUnreadCount(data.unreadCount || 0);
+      } catch {
+        /* network error: keep the old number */
+      }
+    };
+
+    loadCount();
+    const timer = setInterval(loadCount, 60000); // refresh every minute
+    // the notifications page fires this when something is marked as read
+    window.addEventListener("notifications-change", loadCount);
+
+    return () => {
+      active = false;
+      clearInterval(timer);
+      window.removeEventListener("notifications-change", loadCount);
+    };
+  }, [loggedIn, location.pathname]);
 
   // route change hole menu auto close
   useEffect(() => {
@@ -73,10 +109,7 @@ export default function Navbar() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16 md:h-20 lg:h-24">
           {/* Logo */}
-          <Link
-            to="/"
-            className="flex items-center gap-2 group shrink-0"
-          >
+          <Link to="/" className="flex items-center gap-2 group shrink-0">
             <div className="relative w-8 h-8">
               <img
                 src="/Heading.png"
@@ -109,8 +142,8 @@ export default function Navbar() {
             >
               <BellIcon />
               {unreadCount > 0 && (
-                <span className="absolute -top-1 -right-1 flex items-center justify-center w-4 h-4 text-[10px] font-semibold text-white bg-red-500 border border-slate-800 rounded-full">
-                  {unreadCount}
+                <span className="absolute -top-1 -right-1 flex items-center justify-center min-w-4 h-4 px-1 text-[10px] font-semibold text-white bg-red-500 border border-slate-800 rounded-full">
+                  {unreadCount > 9 ? "9+" : unreadCount}
                 </span>
               )}
             </Link>
@@ -133,8 +166,8 @@ export default function Navbar() {
             >
               <BellIcon />
               {unreadCount > 0 && (
-                <span className="absolute -top-1 -right-1 flex items-center justify-center w-4 h-4 text-[10px] font-semibold text-white bg-red-500 border border-slate-800 rounded-full">
-                  {unreadCount}
+                <span className="absolute -top-1 -right-1 flex items-center justify-center min-w-4 h-4 px-1 text-[10px] font-semibold text-white bg-red-500 border border-slate-800 rounded-full">
+                  {unreadCount > 9 ? "9+" : unreadCount}
                 </span>
               )}
             </Link>
@@ -148,11 +181,25 @@ export default function Navbar() {
               className="p-2 -mr-2 text-[#805827] hover:text-[#FFD700] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#FFD700] rounded"
             >
               {open ? (
-                <svg className="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
+                <svg
+                  className="w-6 h-6"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                >
                   <path d="M6 6l12 12M18 6L6 18" />
                 </svg>
               ) : (
-                <svg className="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
+                <svg
+                  className="w-6 h-6"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                >
                   <path d="M4 6h16M4 12h16M4 18h16" />
                 </svg>
               )}
@@ -173,7 +220,9 @@ export default function Navbar() {
             <NavLink
               key={l.to}
               to={l.to}
-              className={(s) => `${linkClass(s)} py-3 border-b border-slate-700`}
+              className={(s) =>
+                `${linkClass(s)} py-3 border-b border-slate-700`
+              }
             >
               {l.label}
             </NavLink>
