@@ -1,4 +1,8 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
+
+const API = import.meta.env.VITE_API_URL || "http://localhost:4000";
+const MAX_FILE_SIZE = 2 * 1024 * 1024; // keep in sync with the backend limit
+const authHeaders = () => ({ Authorization: `Bearer ${localStorage.getItem("token")}` });
 
 const TABS = [
   { id: "personal", label: "Personal" },
@@ -57,9 +61,12 @@ function UploadSlot({ label, required, shape, value, onUpload, hint }) {
   const handleFile = (e) => {
     const file = e.target.files?.[0];
     if (!file) return;
-    const reader = new FileReader();
-    reader.onload = () => onUpload(reader.result, file.name);
-    reader.readAsDataURL(file);
+    if (file.size > MAX_FILE_SIZE) {
+      alert("File is too large (max 2 MB).");
+      e.target.value = "";
+      return;
+    }
+    onUpload(file);
   };
 
   const sizeClass =
@@ -155,16 +162,94 @@ export default function Information() {
     nidMother: null, sscCertificate: null, hscCertificate: null,
   });
 
-  const setDoc = (key) => (dataUrl, name) => {
-    const isPdf = name.toLowerCase().endsWith(".pdf");
-    setDocuments((prev) => ({ ...prev, [key]: { preview: dataUrl, name, isPdf } }));
+  const [error, setError] = useState("");
+  const [saving, setSaving] = useState(false);
+
+  // A picked file: keep the File itself (sent on save) + a temporary preview URL
+  const setDoc = (key) => (file) => {
+    setDocuments((prev) => {
+      if (prev[key]?.preview?.startsWith("blob:")) URL.revokeObjectURL(prev[key].preview);
+      return {
+        ...prev,
+        [key]: {
+          file,
+          name: file.name,
+          isPdf: file.type === "application/pdf",
+          preview: URL.createObjectURL(file),
+        },
+      };
+    });
   };
 
-  const handleSave = () => {
-    const profile = { personal, academic, guardian, documents };
-    localStorage.setItem("admito_applicant_profile", JSON.stringify(profile));
-    setSaved(true);
-    setTimeout(() => setSaved(false), 2500);
+  // Load the saved profile from the backend on mount
+  useEffect(() => {
+    let cancelled = false;
+    (async () => {
+      try {
+        const res = await fetch(`${API}/api/profile`, { headers: authHeaders() });
+        if (!res.ok) return;
+        const data = await res.json();
+        if (!data || cancelled) return;
+
+        if (data.personal) setPersonal((p) => ({ ...p, ...data.personal }));
+        if (data.academic) setAcademic((a) => ({ ...a, ...data.academic }));
+        if (data.guardian) setGuardian((g) => ({ ...g, ...data.guardian }));
+
+        // Files are private, so <img src> can't send the token. Fetch each as a blob instead.
+        for (const [key, meta] of Object.entries(data.documents || {})) {
+          if (!meta?.filename) continue;
+          const r = await fetch(`${API}/api/profile/documents/${key}`, { headers: authHeaders() });
+          if (!r.ok || cancelled) continue;
+          const blob = await r.blob();
+          setDocuments((prev) => ({
+            ...prev,
+            [key]: {
+              file: null, // already on the server, nothing to upload
+              name: meta.originalName,
+              isPdf: meta.mimeType === "application/pdf",
+              preview: URL.createObjectURL(blob),
+            },
+          }));
+        }
+      } catch (err) {
+        console.error("Could not load profile", err);
+      }
+    })();
+    return () => { cancelled = true; };
+  }, []);
+
+  const handleSave = async () => {
+    setError("");
+    setSaving(true);
+    try {
+      const form = new FormData();
+      form.append("personal", JSON.stringify(personal));
+      form.append("academic", JSON.stringify(academic));
+      form.append("guardian", JSON.stringify(guardian));
+      // Only send files the user picked this session
+      Object.entries(documents).forEach(([key, doc]) => {
+        if (doc?.file) form.append(key, doc.file);
+      });
+
+      const res = await fetch(`${API}/api/profile`, {
+        method: "PUT",
+        headers: authHeaders(), // do NOT set Content-Type; the browser adds the multipart boundary
+        body: form,
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.message || "Save failed");
+
+      // Uploaded files are now on the server
+      setDocuments((prev) =>
+        Object.fromEntries(Object.entries(prev).map(([k, d]) => [k, d ? { ...d, file: null } : d]))
+      );
+      setSaved(true);
+      setTimeout(() => setSaved(false), 2500);
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setSaving(false);
+    }
   };
 
   const docCount = Object.values(documents).filter(Boolean).length;
@@ -393,13 +478,14 @@ export default function Information() {
 
           {/* Save bar — Flowbite button pattern */}
           <div className="flex items-center justify-between gap-4 px-6 py-4 bg-gray-50 border-t border-gray-200 rounded-b-lg">
-            <p className="text-xs text-red-500 font-medium">
-              Saved details are stored on this device and reused to help you
-              fill out individual university forms faster.
+            <p className={`text-xs font-medium ${error ? "text-red-500" : "text-gray-500"}`}>
+              {error ||
+                "Saved details are stored securely on your account and reused to help you fill out individual university forms faster."}
             </p>
             <button
               type="button"
               onClick={handleSave}
+              disabled={saving}
               className="shrink-0 inline-flex items-center gap-2 text-white bg-[#805827] hover:bg-[#6b4820] focus:ring-4 focus:outline-none focus:ring-[#805827]/30 font-medium rounded-lg text-sm px-5 py-2.5 transition-colors"
             >
               {saved ? (
@@ -410,7 +496,7 @@ export default function Information() {
                   Saved
                 </>
               ) : (
-                "Save Profile"
+                saving ? "Saving..." : "Save Profile"
               )}
             </button>
           </div>
