@@ -2,7 +2,9 @@ import { useState, useRef, useEffect } from "react";
 
 const API = import.meta.env.VITE_API_URL || "http://localhost:4000";
 const MAX_FILE_SIZE = 2 * 1024 * 1024; // keep in sync with the backend limit
-const authHeaders = () => ({ Authorization: `Bearer ${localStorage.getItem("token")}` });
+const authHeaders = () => ({
+  Authorization: `Bearer ${localStorage.getItem("token")}`,
+});
 
 const TABS = [
   { id: "personal", label: "Personal" },
@@ -13,7 +15,14 @@ const TABS = [
 
 // Flowbite standard input pattern (label above, no floating overlap)
 // https://flowbite.com/docs/forms/input-field/
-function Field({ label, required, value, onChange, type = "text", placeholder }) {
+function Field({
+  label,
+  required,
+  value,
+  onChange,
+  type = "text",
+  placeholder,
+}) {
   return (
     <div>
       <label className="block mb-2 text-sm font-medium text-gray-700">
@@ -70,7 +79,9 @@ function UploadSlot({ label, required, shape, value, onUpload, hint }) {
   };
 
   const sizeClass =
-    shape === "square" ? "w-[200px] aspect-square shrink-0" : "w-[200px] h-20 shrink-0";
+    shape === "square"
+      ? "w-[200px] aspect-square shrink-0"
+      : "w-[200px] h-20 shrink-0";
 
   return (
     <div>
@@ -83,13 +94,29 @@ function UploadSlot({ label, required, shape, value, onUpload, hint }) {
         {value?.preview ? (
           value.isPdf ? (
             <div className="flex flex-col items-center justify-center gap-1 p-2">
-              <svg className="w-8 h-8 text-[#805827]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+              <svg
+                className="w-8 h-8 text-[#805827]"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth="1.5"
+                  d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+                />
               </svg>
-              <span className="text-[11px] text-gray-500 text-center break-all px-1">{value.name}</span>
+              <span className="text-[11px] text-gray-500 text-center break-all px-1">
+                {value.name}
+              </span>
             </div>
           ) : (
-            <img src={value.preview} alt={label} className="w-full h-full object-cover" />
+            <img
+              src={value.preview}
+              alt={label}
+              className="w-full h-full object-cover"
+            />
           )
         ) : (
           <div className="flex flex-col items-center justify-center pt-2 pb-3">
@@ -131,35 +158,87 @@ function UploadSlot({ label, required, shape, value, onUpload, hint }) {
   );
 }
 
-const BOARDS = ["Dhaka", "Rajshahi", "Chittagong", "Sylhet", "Barisal", "Comilla", "Dinajpur", "Jessore", "Mymensingh", "Madrasah", "Technical"];
+const BOARDS = [
+  "Dhaka",
+  "Rajshahi",
+  "Chittagong",
+  "Sylhet",
+  "Barisal",
+  "Comilla",
+  "Dinajpur",
+  "Jessore",
+  "Mymensingh",
+  "Madrasah",
+  "Technical",
+];
 const GROUPS = ["Science", "Commerce", "Arts/Humanities"];
 const BLOOD_GROUPS = ["A+", "A-", "B+", "B-", "AB+", "AB-", "O+", "O-"];
-const DIVISIONS = ["Dhaka", "Chattogram", "Rajshahi", "Khulna", "Barishal", "Sylhet", "Rangpur", "Mymensingh"];
+const DIVISIONS = [
+  "Dhaka",
+  "Chattogram",
+  "Rajshahi",
+  "Khulna",
+  "Barishal",
+  "Sylhet",
+  "Rangpur",
+  "Mymensingh",
+];
 
 export default function Information() {
   const [activeTab, setActiveTab] = useState("personal");
   const [saved, setSaved] = useState(false);
 
   const [personal, setPersonal] = useState({
-    nameEn: "", nameBn: "", dob: "", gender: "", religion: "",
-    nationality: "Bangladeshi", bloodGroup: "", nid: "", birthRegNo: "",
+    nameEn: "",
+    nameBn: "",
+    dob: "",
+    gender: "",
+    religion: "",
+    nationality: "Bangladeshi",
+    bloodGroup: "",
+    nid: "",
+    birthRegNo: "",
   });
 
   const [academic, setAcademic] = useState({
-    sscBoard: "", sscRoll: "", sscRegNo: "", sscYear: "", sscGpa: "", sscGroup: "",
-    hscBoard: "", hscRoll: "", hscRegNo: "", hscYear: "", hscGpa: "", hscGroup: "",
+    sscBoard: "",
+    sscRoll: "",
+    sscRegNo: "",
+    sscYear: "",
+    sscGpa: "",
+    sscGroup: "",
+    hscBoard: "",
+    hscRoll: "",
+    hscRegNo: "",
+    hscYear: "",
+    hscGpa: "",
+    hscGroup: "",
   });
 
   const [guardian, setGuardian] = useState({
-    fatherName: "", fatherOccupation: "", fatherPhone: "",
-    motherName: "", motherOccupation: "", motherPhone: "",
-    guardianEmail: "", applicantPhone: "",
-    presentAddress: "", permanentAddress: "", division: "", district: "", postCode: "",
+    fatherName: "",
+    fatherOccupation: "",
+    fatherPhone: "",
+    motherName: "",
+    motherOccupation: "",
+    motherPhone: "",
+    guardianEmail: "",
+    applicantPhone: "",
+    presentAddress: "",
+    permanentAddress: "",
+    division: "",
+    district: "",
+    postCode: "",
   });
 
   const [documents, setDocuments] = useState({
-    photo: null, signature: null, nidSelf: null, nidFather: null,
-    nidMother: null, sscCertificate: null, hscCertificate: null,
+    photo: null,
+    signature: null,
+    nidSelf: null,
+    nidFather: null,
+    nidMother: null,
+    sscCertificate: null,
+    hscCertificate: null,
   });
 
   const [error, setError] = useState("");
@@ -168,7 +247,8 @@ export default function Information() {
   // A picked file: keep the File itself (sent on save) + a temporary preview URL
   const setDoc = (key) => (file) => {
     setDocuments((prev) => {
-      if (prev[key]?.preview?.startsWith("blob:")) URL.revokeObjectURL(prev[key].preview);
+      if (prev[key]?.preview?.startsWith("blob:"))
+        URL.revokeObjectURL(prev[key].preview);
       return {
         ...prev,
         [key]: {
@@ -186,7 +266,9 @@ export default function Information() {
     let cancelled = false;
     (async () => {
       try {
-        const res = await fetch(`${API}/api/profile`, { headers: authHeaders() });
+        const res = await fetch(`${API}/api/profile`, {
+          headers: authHeaders(),
+        });
         if (!res.ok) return;
         const data = await res.json();
         if (!data || cancelled) return;
@@ -198,7 +280,9 @@ export default function Information() {
         // Files are private, so <img src> can't send the token. Fetch each as a blob instead.
         for (const [key, meta] of Object.entries(data.documents || {})) {
           if (!meta?.filename) continue;
-          const r = await fetch(`${API}/api/profile/documents/${key}`, { headers: authHeaders() });
+          const r = await fetch(`${API}/api/profile/documents/${key}`, {
+            headers: authHeaders(),
+          });
           if (!r.ok || cancelled) continue;
           const blob = await r.blob();
           setDocuments((prev) => ({
@@ -215,7 +299,9 @@ export default function Information() {
         console.error("Could not load profile", err);
       }
     })();
-    return () => { cancelled = true; };
+    return () => {
+      cancelled = true;
+    };
   }, []);
 
   const handleSave = async () => {
@@ -236,12 +322,28 @@ export default function Information() {
         headers: authHeaders(), // do NOT set Content-Type; the browser adds the multipart boundary
         body: form,
       });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.message || "Save failed");
+      const text = await res.text();
+      let data = {};
+      try {
+        data = JSON.parse(text);
+      } catch {
+        /* server sent non-JSON (e.g. an HTML 404 page) */
+      }
+      if (!res.ok) {
+        throw new Error(
+          data.message ||
+            `Save failed (${res.status}) at ${res.url} - is the backend route registered and running?`,
+        );
+      }
 
       // Uploaded files are now on the server
       setDocuments((prev) =>
-        Object.fromEntries(Object.entries(prev).map(([k, d]) => [k, d ? { ...d, file: null } : d]))
+        Object.fromEntries(
+          Object.entries(prev).map(([k, d]) => [
+            k,
+            d ? { ...d, file: null } : d,
+          ]),
+        ),
       );
       setSaved(true);
       setTimeout(() => setSaved(false), 2500);
@@ -258,7 +360,7 @@ export default function Information() {
     <section className="min-h-screen bg-stone-200 pt-24 sm:pt-28 md:pt-32 pb-16 px-4">
       <div className="max-w-4xl mx-auto">
         <div className="pointer-events-none absolute -top-20 -right-20 h-80 w-80 rounded-full border border-amber-700"></div>
-      <div className="pointer-events-none absolute top-10 right-5 h-52 w-52 rounded-full border border-gold/15"></div>
+        <div className="pointer-events-none absolute top-10 right-5 h-52 w-52 rounded-full border border-gold/15"></div>
 
         {/* Header */}
         <div className="mb-6">
@@ -266,9 +368,9 @@ export default function Information() {
             Applicant Profile
           </h1>
           <p className="text-slate-500 max-w-2xl">
-            Save your details, academic records, and documents here — reuse
-            them as a quick reference to fill out any university's form
-            faster and with fewer errors.
+            Save your details, academic records, and documents here — reuse them
+            as a quick reference to fill out any university's form faster and
+            with fewer errors.
           </p>
         </div>
 
@@ -276,7 +378,10 @@ export default function Information() {
           {/* Flowbite Tabs — underline style */}
           {/* https://flowbite.com/docs/components/tabs/ */}
           <div className="border-b border-gray-200">
-            <ul className="flex flex-wrap -mb-px text-sm font-medium text-center overflow-x-auto" role="tablist">
+            <ul
+              className="flex flex-wrap -mb-px text-sm font-medium text-center overflow-x-auto"
+              role="tablist"
+            >
               {TABS.map((tab) => (
                 <li key={tab.id} className="me-2" role="presentation">
                   <button
@@ -305,27 +410,84 @@ export default function Information() {
             {/* Personal tab */}
             {activeTab === "personal" && (
               <div className="grid sm:grid-cols-2 gap-x-6 gap-y-5">
-                <Field label="Full Name (English)" required value={personal.nameEn}
-                  onChange={(e) => setPersonal({ ...personal, nameEn: e.target.value })} />
-                <Field label="Full Name (বাংলা)" required value={personal.nameBn}
-                  onChange={(e) => setPersonal({ ...personal, nameBn: e.target.value })} />
-                <Field label="Date of Birth" required type="date" value={personal.dob}
-                  onChange={(e) => setPersonal({ ...personal, dob: e.target.value })} />
-                <SelectField label="Gender" required value={personal.gender}
-                  onChange={(e) => setPersonal({ ...personal, gender: e.target.value })}
-                  options={["Male", "Female", "Other"]} />
-                <SelectField label="Religion" value={personal.religion}
-                  onChange={(e) => setPersonal({ ...personal, religion: e.target.value })}
-                  options={["Islam", "Hinduism", "Christianity", "Buddhism", "Other"]} />
-                <Field label="Nationality" value={personal.nationality}
-                  onChange={(e) => setPersonal({ ...personal, nationality: e.target.value })} />
-                <SelectField label="Blood Group" value={personal.bloodGroup}
-                  onChange={(e) => setPersonal({ ...personal, bloodGroup: e.target.value })}
-                  options={BLOOD_GROUPS} />
-                <Field label="NID / Smart Card No." value={personal.nid}
-                  onChange={(e) => setPersonal({ ...personal, nid: e.target.value })} />
-                <Field label="Birth Registration No." required value={personal.birthRegNo}
-                  onChange={(e) => setPersonal({ ...personal, birthRegNo: e.target.value })} />
+                <Field
+                  label="Full Name (English)"
+                  required
+                  value={personal.nameEn}
+                  onChange={(e) =>
+                    setPersonal({ ...personal, nameEn: e.target.value })
+                  }
+                />
+                <Field
+                  label="Full Name (বাংলা)"
+                  required
+                  value={personal.nameBn}
+                  onChange={(e) =>
+                    setPersonal({ ...personal, nameBn: e.target.value })
+                  }
+                />
+                <Field
+                  label="Date of Birth"
+                  required
+                  type="date"
+                  value={personal.dob}
+                  onChange={(e) =>
+                    setPersonal({ ...personal, dob: e.target.value })
+                  }
+                />
+                <SelectField
+                  label="Gender"
+                  required
+                  value={personal.gender}
+                  onChange={(e) =>
+                    setPersonal({ ...personal, gender: e.target.value })
+                  }
+                  options={["Male", "Female", "Other"]}
+                />
+                <SelectField
+                  label="Religion"
+                  value={personal.religion}
+                  onChange={(e) =>
+                    setPersonal({ ...personal, religion: e.target.value })
+                  }
+                  options={[
+                    "Islam",
+                    "Hinduism",
+                    "Christianity",
+                    "Buddhism",
+                    "Other",
+                  ]}
+                />
+                <Field
+                  label="Nationality"
+                  value={personal.nationality}
+                  onChange={(e) =>
+                    setPersonal({ ...personal, nationality: e.target.value })
+                  }
+                />
+                <SelectField
+                  label="Blood Group"
+                  value={personal.bloodGroup}
+                  onChange={(e) =>
+                    setPersonal({ ...personal, bloodGroup: e.target.value })
+                  }
+                  options={BLOOD_GROUPS}
+                />
+                <Field
+                  label="NID / Smart Card No."
+                  value={personal.nid}
+                  onChange={(e) =>
+                    setPersonal({ ...personal, nid: e.target.value })
+                  }
+                />
+                <Field
+                  label="Birth Registration No."
+                  required
+                  value={personal.birthRegNo}
+                  onChange={(e) =>
+                    setPersonal({ ...personal, birthRegNo: e.target.value })
+                  }
+                />
               </div>
             )}
 
@@ -338,18 +500,56 @@ export default function Information() {
                     SSC / Equivalent
                   </h3>
                   <div className="grid sm:grid-cols-3 gap-x-6 gap-y-5">
-                    <SelectField label="Board" required value={academic.sscBoard}
-                      onChange={(e) => setAcademic({ ...academic, sscBoard: e.target.value })} options={BOARDS} />
-                    <SelectField label="Group" required value={academic.sscGroup}
-                      onChange={(e) => setAcademic({ ...academic, sscGroup: e.target.value })} options={GROUPS} />
-                    <Field label="Passing Year" required value={academic.sscYear}
-                      onChange={(e) => setAcademic({ ...academic, sscYear: e.target.value })} />
-                    <Field label="Roll No." required value={academic.sscRoll}
-                      onChange={(e) => setAcademic({ ...academic, sscRoll: e.target.value })} />
-                    <Field label="Registration No." required value={academic.sscRegNo}
-                      onChange={(e) => setAcademic({ ...academic, sscRegNo: e.target.value })} />
-                    <Field label="GPA" required value={academic.sscGpa}
-                      onChange={(e) => setAcademic({ ...academic, sscGpa: e.target.value })} />
+                    <SelectField
+                      label="Board"
+                      required
+                      value={academic.sscBoard}
+                      onChange={(e) =>
+                        setAcademic({ ...academic, sscBoard: e.target.value })
+                      }
+                      options={BOARDS}
+                    />
+                    <SelectField
+                      label="Group"
+                      required
+                      value={academic.sscGroup}
+                      onChange={(e) =>
+                        setAcademic({ ...academic, sscGroup: e.target.value })
+                      }
+                      options={GROUPS}
+                    />
+                    <Field
+                      label="Passing Year"
+                      required
+                      value={academic.sscYear}
+                      onChange={(e) =>
+                        setAcademic({ ...academic, sscYear: e.target.value })
+                      }
+                    />
+                    <Field
+                      label="Roll No."
+                      required
+                      value={academic.sscRoll}
+                      onChange={(e) =>
+                        setAcademic({ ...academic, sscRoll: e.target.value })
+                      }
+                    />
+                    <Field
+                      label="Registration No."
+                      required
+                      value={academic.sscRegNo}
+                      onChange={(e) =>
+                        setAcademic({ ...academic, sscRegNo: e.target.value })
+                      }
+                    />
+                    <Field
+                      label="GPA"
+                      required
+                      value={academic.sscGpa}
+                      onChange={(e) =>
+                        setAcademic({ ...academic, sscGpa: e.target.value })
+                      }
+                    />
                   </div>
                 </div>
 
@@ -359,18 +559,56 @@ export default function Information() {
                     HSC / Equivalent
                   </h3>
                   <div className="grid sm:grid-cols-3 gap-x-6 gap-y-5">
-                    <SelectField label="Board" required value={academic.hscBoard}
-                      onChange={(e) => setAcademic({ ...academic, hscBoard: e.target.value })} options={BOARDS} />
-                    <SelectField label="Group" required value={academic.hscGroup}
-                      onChange={(e) => setAcademic({ ...academic, hscGroup: e.target.value })} options={GROUPS} />
-                    <Field label="Passing Year" required value={academic.hscYear}
-                      onChange={(e) => setAcademic({ ...academic, hscYear: e.target.value })} />
-                    <Field label="Roll No." required value={academic.hscRoll}
-                      onChange={(e) => setAcademic({ ...academic, hscRoll: e.target.value })} />
-                    <Field label="Registration No." required value={academic.hscRegNo}
-                      onChange={(e) => setAcademic({ ...academic, hscRegNo: e.target.value })} />
-                    <Field label="GPA" required value={academic.hscGpa}
-                      onChange={(e) => setAcademic({ ...academic, hscGpa: e.target.value })} />
+                    <SelectField
+                      label="Board"
+                      required
+                      value={academic.hscBoard}
+                      onChange={(e) =>
+                        setAcademic({ ...academic, hscBoard: e.target.value })
+                      }
+                      options={BOARDS}
+                    />
+                    <SelectField
+                      label="Group"
+                      required
+                      value={academic.hscGroup}
+                      onChange={(e) =>
+                        setAcademic({ ...academic, hscGroup: e.target.value })
+                      }
+                      options={GROUPS}
+                    />
+                    <Field
+                      label="Passing Year"
+                      required
+                      value={academic.hscYear}
+                      onChange={(e) =>
+                        setAcademic({ ...academic, hscYear: e.target.value })
+                      }
+                    />
+                    <Field
+                      label="Roll No."
+                      required
+                      value={academic.hscRoll}
+                      onChange={(e) =>
+                        setAcademic({ ...academic, hscRoll: e.target.value })
+                      }
+                    />
+                    <Field
+                      label="Registration No."
+                      required
+                      value={academic.hscRegNo}
+                      onChange={(e) =>
+                        setAcademic({ ...academic, hscRegNo: e.target.value })
+                      }
+                    />
+                    <Field
+                      label="GPA"
+                      required
+                      value={academic.hscGpa}
+                      onChange={(e) =>
+                        setAcademic({ ...academic, hscGpa: e.target.value })
+                      }
+                    />
                   </div>
                 </div>
               </div>
@@ -385,18 +623,62 @@ export default function Information() {
                     Guardian Details
                   </h3>
                   <div className="grid sm:grid-cols-2 gap-x-6 gap-y-5">
-                    <Field label="Father's Name" required value={guardian.fatherName}
-                      onChange={(e) => setGuardian({ ...guardian, fatherName: e.target.value })} />
-                    <Field label="Father's Occupation" value={guardian.fatherOccupation}
-                      onChange={(e) => setGuardian({ ...guardian, fatherOccupation: e.target.value })} />
-                    <Field label="Father's Phone" value={guardian.fatherPhone}
-                      onChange={(e) => setGuardian({ ...guardian, fatherPhone: e.target.value })} />
-                    <Field label="Mother's Name" required value={guardian.motherName}
-                      onChange={(e) => setGuardian({ ...guardian, motherName: e.target.value })} />
-                    <Field label="Mother's Occupation" value={guardian.motherOccupation}
-                      onChange={(e) => setGuardian({ ...guardian, motherOccupation: e.target.value })} />
-                    <Field label="Mother's Phone" value={guardian.motherPhone}
-                      onChange={(e) => setGuardian({ ...guardian, motherPhone: e.target.value })} />
+                    <Field
+                      label="Father's Name"
+                      required
+                      value={guardian.fatherName}
+                      onChange={(e) =>
+                        setGuardian({ ...guardian, fatherName: e.target.value })
+                      }
+                    />
+                    <Field
+                      label="Father's Occupation"
+                      value={guardian.fatherOccupation}
+                      onChange={(e) =>
+                        setGuardian({
+                          ...guardian,
+                          fatherOccupation: e.target.value,
+                        })
+                      }
+                    />
+                    <Field
+                      label="Father's Phone"
+                      value={guardian.fatherPhone}
+                      onChange={(e) =>
+                        setGuardian({
+                          ...guardian,
+                          fatherPhone: e.target.value,
+                        })
+                      }
+                    />
+                    <Field
+                      label="Mother's Name"
+                      required
+                      value={guardian.motherName}
+                      onChange={(e) =>
+                        setGuardian({ ...guardian, motherName: e.target.value })
+                      }
+                    />
+                    <Field
+                      label="Mother's Occupation"
+                      value={guardian.motherOccupation}
+                      onChange={(e) =>
+                        setGuardian({
+                          ...guardian,
+                          motherOccupation: e.target.value,
+                        })
+                      }
+                    />
+                    <Field
+                      label="Mother's Phone"
+                      value={guardian.motherPhone}
+                      onChange={(e) =>
+                        setGuardian({
+                          ...guardian,
+                          motherPhone: e.target.value,
+                        })
+                      }
+                    />
                   </div>
                 </div>
 
@@ -406,20 +688,74 @@ export default function Information() {
                     Your Contact
                   </h3>
                   <div className="grid sm:grid-cols-2 gap-x-6 gap-y-5">
-                    <Field label="Mobile Number" required value={guardian.applicantPhone}
-                      onChange={(e) => setGuardian({ ...guardian, applicantPhone: e.target.value })} />
-                    <Field label="Email" type="email" value={guardian.guardianEmail}
-                      onChange={(e) => setGuardian({ ...guardian, guardianEmail: e.target.value })} />
-                    <Field label="Present Address" required value={guardian.presentAddress}
-                      onChange={(e) => setGuardian({ ...guardian, presentAddress: e.target.value })} />
-                    <Field label="Permanent Address" required value={guardian.permanentAddress}
-                      onChange={(e) => setGuardian({ ...guardian, permanentAddress: e.target.value })} />
-                    <SelectField label="Division" required value={guardian.division}
-                      onChange={(e) => setGuardian({ ...guardian, division: e.target.value })} options={DIVISIONS} />
-                    <Field label="District" required value={guardian.district}
-                      onChange={(e) => setGuardian({ ...guardian, district: e.target.value })} />
-                    <Field label="Post Code" value={guardian.postCode}
-                      onChange={(e) => setGuardian({ ...guardian, postCode: e.target.value })} />
+                    <Field
+                      label="Mobile Number"
+                      required
+                      value={guardian.applicantPhone}
+                      onChange={(e) =>
+                        setGuardian({
+                          ...guardian,
+                          applicantPhone: e.target.value,
+                        })
+                      }
+                    />
+                    <Field
+                      label="Email"
+                      type="email"
+                      value={guardian.guardianEmail}
+                      onChange={(e) =>
+                        setGuardian({
+                          ...guardian,
+                          guardianEmail: e.target.value,
+                        })
+                      }
+                    />
+                    <Field
+                      label="Present Address"
+                      required
+                      value={guardian.presentAddress}
+                      onChange={(e) =>
+                        setGuardian({
+                          ...guardian,
+                          presentAddress: e.target.value,
+                        })
+                      }
+                    />
+                    <Field
+                      label="Permanent Address"
+                      required
+                      value={guardian.permanentAddress}
+                      onChange={(e) =>
+                        setGuardian({
+                          ...guardian,
+                          permanentAddress: e.target.value,
+                        })
+                      }
+                    />
+                    <SelectField
+                      label="Division"
+                      required
+                      value={guardian.division}
+                      onChange={(e) =>
+                        setGuardian({ ...guardian, division: e.target.value })
+                      }
+                      options={DIVISIONS}
+                    />
+                    <Field
+                      label="District"
+                      required
+                      value={guardian.district}
+                      onChange={(e) =>
+                        setGuardian({ ...guardian, district: e.target.value })
+                      }
+                    />
+                    <Field
+                      label="Post Code"
+                      value={guardian.postCode}
+                      onChange={(e) =>
+                        setGuardian({ ...guardian, postCode: e.target.value })
+                      }
+                    />
                   </div>
                 </div>
               </div>
@@ -434,12 +770,22 @@ export default function Information() {
                     Photo & Signature
                   </h3>
                   <div className="flex flex-wrap gap-6">
-                    <UploadSlot label="Passport Size Photo" required shape="square"
-                      value={documents.photo} onUpload={setDoc("photo")}
-                      hint="White background, recent, JPG/PNG" />
-                    <UploadSlot label="Signature" required shape="rect"
-                      value={documents.signature} onUpload={setDoc("signature")}
-                      hint="Scanned, on white background" />
+                    <UploadSlot
+                      label="Passport Size Photo"
+                      required
+                      shape="square"
+                      value={documents.photo}
+                      onUpload={setDoc("photo")}
+                      hint="White background, recent, JPG/PNG"
+                    />
+                    <UploadSlot
+                      label="Signature"
+                      required
+                      shape="rect"
+                      value={documents.signature}
+                      onUpload={setDoc("signature")}
+                      hint="Scanned, on white background"
+                    />
                   </div>
                 </div>
 
@@ -449,12 +795,27 @@ export default function Information() {
                     National ID / Birth Registration
                   </h3>
                   <div className="flex flex-wrap gap-6">
-                    <UploadSlot label="Your NID / Birth Reg." required shape="rect"
-                      value={documents.nidSelf} onUpload={setDoc("nidSelf")} />
-                    <UploadSlot label="Father's NID" required shape="rect"
-                      value={documents.nidFather} onUpload={setDoc("nidFather")} />
-                    <UploadSlot label="Mother's NID" required shape="rect"
-                      value={documents.nidMother} onUpload={setDoc("nidMother")} />
+                    <UploadSlot
+                      label="Your NID / Birth Reg."
+                      required
+                      shape="rect"
+                      value={documents.nidSelf}
+                      onUpload={setDoc("nidSelf")}
+                    />
+                    <UploadSlot
+                      label="Father's NID"
+                      required
+                      shape="rect"
+                      value={documents.nidFather}
+                      onUpload={setDoc("nidFather")}
+                    />
+                    <UploadSlot
+                      label="Mother's NID"
+                      required
+                      shape="rect"
+                      value={documents.nidMother}
+                      onUpload={setDoc("nidMother")}
+                    />
                   </div>
                 </div>
 
@@ -464,12 +825,22 @@ export default function Information() {
                     Academic Certificates
                   </h3>
                   <div className="flex flex-wrap gap-6">
-                    <UploadSlot label="SSC Certificate / Marksheet" required shape="rect"
-                      value={documents.sscCertificate} onUpload={setDoc("sscCertificate")}
-                      hint="PDF or scanned image" />
-                    <UploadSlot label="HSC Certificate / Marksheet" required shape="rect"
-                      value={documents.hscCertificate} onUpload={setDoc("hscCertificate")}
-                      hint="PDF or scanned image" />
+                    <UploadSlot
+                      label="SSC Certificate / Marksheet"
+                      required
+                      shape="rect"
+                      value={documents.sscCertificate}
+                      onUpload={setDoc("sscCertificate")}
+                      hint="PDF or scanned image"
+                    />
+                    <UploadSlot
+                      label="HSC Certificate / Marksheet"
+                      required
+                      shape="rect"
+                      value={documents.hscCertificate}
+                      onUpload={setDoc("hscCertificate")}
+                      hint="PDF or scanned image"
+                    />
                   </div>
                 </div>
               </div>
@@ -478,7 +849,9 @@ export default function Information() {
 
           {/* Save bar — Flowbite button pattern */}
           <div className="flex items-center justify-between gap-4 px-6 py-4 bg-gray-50 border-t border-gray-200 rounded-b-lg">
-            <p className={`text-xs font-medium ${error ? "text-red-500" : "text-gray-500"}`}>
+            <p
+              className={`text-xs font-medium ${error ? "text-red-500" : "text-gray-500"}`}
+            >
               {error ||
                 "Saved details are stored securely on your account and reused to help you fill out individual university forms faster."}
             </p>
@@ -490,13 +863,25 @@ export default function Information() {
             >
               {saved ? (
                 <>
-                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" />
+                  <svg
+                    className="w-4 h-4"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth="2"
+                      d="M5 13l4 4L19 7"
+                    />
                   </svg>
                   Saved
                 </>
+              ) : saving ? (
+                "Saving..."
               ) : (
-                saving ? "Saving..." : "Save Profile"
+                "Save Profile"
               )}
             </button>
           </div>
