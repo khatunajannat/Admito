@@ -1,61 +1,53 @@
+import { useCallback, useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
+import { apiFetch } from "../utils/api";
 
-const notifications = {
-  today: [
-    {
-      id: 1,
-      title: "Merit list for Phase 1 published",
-      message:
-        "Check your application status to see if you've been shortlisted for the next round.",
-      time: "2 min ago",
-      cta: { label: "Check status", href: "/status" },
-      unread: true,
-    },
-    {
-      id: 2,
-      title: "Document verification reminder",
-      message:
-        "Upload your NID and academic certificates before Aug 25 to avoid delays.",
-      time: "1 hour ago",
-      cta: { label: "Upload documents", href: "/documents" },
-      unread: true,
-    },
-    {
-      id: 3,
-      title: "New circular: Fee payment deadline",
-      message:
-        "Session fee must be paid by Sep 5 to confirm your seat for 2026–27.",
-      time: "5 hours ago",
-      cta: { label: "View circular", href: "/circulars/fee-deadline" },
-      unread: true,
-    },
-  ],
-  earlier: [
-    {
-      id: 4,
-      title: "Assessment schedule released",
-      message: "Your entrance assessment is scheduled for Sep 20, 10:00 AM.",
-      time: "Yesterday",
-      unread: false,
-    },
-    {
-      id: 5,
-      title: "Welcome to Admito",
-      message:
-        "Your account has been created successfully. Complete your profile to get started.",
-      time: "2 days ago",
-      unread: false,
-    },
-    {
-      id: 6,
-      title: "Application received",
-      message:
-        "We've received your application for Session 2026–27. You'll be notified of updates here.",
-      time: "3 days ago",
-      unread: false,
-    },
-  ],
+const PAGE_SIZE = 20;
+
+// "key" is sent to the backend as ?filter=<key>
+const TABS = [
+  { key: "all", label: "All" },
+  { key: "unread", label: "Unread" },
+  { key: "circulars", label: "Circulars" },
+  { key: "status", label: "Status" },
+];
+
+const EMPTY_TEXT = {
+  all: "You have no notifications yet.",
+  unread: "You're all caught up. No unread notifications.",
+  circulars: "No circular notifications yet.",
+  status: "No application status updates yet.",
 };
+
+// ---------- date helpers ----------
+
+const startOfDay = (d) => new Date(d.getFullYear(), d.getMonth(), d.getDate());
+
+// how many calendar days ago (0 = today)
+const daysAgo = (dateStr) =>
+  Math.round(
+    (startOfDay(new Date()) - startOfDay(new Date(dateStr))) / 86400000,
+  );
+
+function timeAgo(dateStr) {
+  const date = new Date(dateStr);
+  const diff = daysAgo(dateStr);
+
+  if (diff <= 0) {
+    const min = Math.floor((Date.now() - date.getTime()) / 60000);
+    if (min < 1) return "Just now";
+    if (min < 60) return `${min} min ago`;
+    const hr = Math.floor(min / 60);
+    return `${hr} hour${hr > 1 ? "s" : ""} ago`;
+  }
+  if (diff === 1) return "Yesterday";
+  if (diff < 7) return `${diff} days ago`;
+  return date.toLocaleDateString("en-GB", {
+    day: "numeric",
+    month: "short",
+    year: "numeric",
+  });
+}
 
 const bellIcon = (
   <svg className="w-5 h-5" viewBox="0 0 24 24" fill="currentColor">
@@ -67,19 +59,28 @@ const bellIcon = (
   </svg>
 );
 
-function NotificationItem({ n }) {
+// ---------- one notification card ----------
+
+function NotificationItem({ n, onRead }) {
+  const unread = !n.read;
+  const ctaClass =
+    "mt-2 inline-block text-xs font-semibold text-[#805827] hover:text-[#FFD700]";
+  const ctaLabel = `${n.linkLabel || "View details"} →`;
+  const isExternal = n.link && /^https?:\/\//i.test(n.link);
+
   return (
     <div
+      onClick={() => unread && onRead(n._id)}
       className={`relative flex gap-4 rounded-xl border border-slate-200 p-4 transition hover:shadow-md ${
-        n.unread ? "bg-white" : "bg-white/60"
+        unread ? "cursor-pointer bg-white" : "bg-white/60"
       }`}
     >
-      {n.unread && (
+      {unread && (
         <span className="absolute left-0 top-0 h-full w-1 rounded-l-xl bg-[#FFD700]" />
       )}
       <div
         className={`ml-1 flex h-10 w-10 shrink-0 items-center justify-center rounded-full ${
-          n.unread
+          unread
             ? "bg-[#805827]/10 text-[#805827]"
             : "bg-slate-100 text-slate-400"
         }`}
@@ -90,7 +91,7 @@ function NotificationItem({ n }) {
         <div className="flex items-start justify-between gap-2">
           <p
             className={`text-sm ${
-              n.unread
+              unread
                 ? "font-semibold text-slate-800"
                 : "font-medium text-slate-500"
             }`}
@@ -98,24 +99,131 @@ function NotificationItem({ n }) {
             {n.title}
           </p>
           <span className="whitespace-nowrap text-xs text-slate-400">
-            {n.time}
+            {timeAgo(n.createdAt)}
           </span>
         </div>
         <p className="mt-1 text-sm text-slate-500">{n.message}</p>
-        {n.cta && (
-          <Link
-            to={n.cta.href}
-            className="mt-2 inline-block text-xs font-semibold text-[#805827] hover:text-[#FFD700]"
-          >
-            {n.cta.label} →
-          </Link>
-        )}
+        {n.link &&
+          (isExternal ? (
+            <a
+              href={n.link}
+              target="_blank"
+              rel="noopener noreferrer"
+              className={ctaClass}
+            >
+              {ctaLabel}
+            </a>
+          ) : (
+            <Link to={n.link} className={ctaClass}>
+              {ctaLabel}
+            </Link>
+          ))}
       </div>
     </div>
   );
 }
 
+// ---------- page ----------
+
 export default function NotificationsPage() {
+  const [filter, setFilter] = useState("all");
+  const [items, setItems] = useState([]);
+  const [unreadCount, setUnreadCount] = useState(0);
+  const [page, setPage] = useState(1);
+  const [hasMore, setHasMore] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const [loadingMore, setLoadingMore] = useState(false);
+  const [markingAll, setMarkingAll] = useState(false);
+  const [error, setError] = useState("");
+
+  // ignore answers from old requests (e.g. user clicks tabs quickly)
+  const requestId = useRef(0);
+
+  const load = useCallback(async (nextFilter, nextPage) => {
+    const id = ++requestId.current;
+    const append = nextPage > 1;
+
+    if (append) setLoadingMore(true);
+    else setLoading(true);
+    setError("");
+
+    try {
+      const res = await apiFetch(
+        `/api/notifications?filter=${nextFilter}&page=${nextPage}&limit=${PAGE_SIZE}`,
+      );
+      const data = await res.json();
+      if (!res.ok)
+        throw new Error(data.message || "Could not load notifications");
+      if (id !== requestId.current) return;
+
+      setItems((prev) => {
+        if (!append) return data.notifications;
+        const seen = new Set(prev.map((i) => i._id));
+        return [...prev, ...data.notifications.filter((i) => !seen.has(i._id))];
+      });
+      setUnreadCount(data.unreadCount);
+      setPage(data.page);
+      setHasMore(data.hasMore);
+    } catch (err) {
+      if (id === requestId.current) setError(err.message);
+    } finally {
+      if (id === requestId.current) {
+        setLoading(false);
+        setLoadingMore(false);
+      }
+    }
+  }, []);
+
+  // first load + every time a tab is clicked
+  useEffect(() => {
+    load(filter, 1);
+  }, [filter, load]);
+
+  // tell the Navbar bell to refresh its badge
+  const notifyNavbar = () =>
+    window.dispatchEvent(new Event("notifications-change"));
+
+  const markRead = async (id) => {
+    // update the screen first, undo if the server says no
+    setItems((prev) =>
+      prev.map((i) => (i._id === id ? { ...i, read: true } : i)),
+    );
+    setUnreadCount((c) => Math.max(0, c - 1));
+
+    try {
+      const res = await apiFetch(`/api/notifications/${id}/read`, {
+        method: "PATCH",
+      });
+      if (!res.ok) throw new Error("Failed");
+      notifyNavbar();
+    } catch {
+      setItems((prev) =>
+        prev.map((i) => (i._id === id ? { ...i, read: false } : i)),
+      );
+      setUnreadCount((c) => c + 1);
+    }
+  };
+
+  const markAllRead = async () => {
+    setMarkingAll(true);
+    try {
+      const res = await apiFetch("/api/notifications/read-all", {
+        method: "PATCH",
+      });
+      if (!res.ok) throw new Error("Failed");
+      setItems((prev) => prev.map((i) => ({ ...i, read: true })));
+      setUnreadCount(0);
+      notifyNavbar();
+    } catch {
+      setError("Could not mark notifications as read. Please try again.");
+    } finally {
+      setMarkingAll(false);
+    }
+  };
+
+  const today = items.filter((n) => daysAgo(n.createdAt) <= 0);
+  const earlier = items.filter((n) => daysAgo(n.createdAt) > 0);
+
   return (
     <div className="min-h-screen bg-stone-200 pt-20 sm:pt-24 md:pt-28 lg:pt-32">
       {/* Page header */}
@@ -127,8 +235,12 @@ export default function NotificationsPage() {
           <h1 className="text-3xl font-semibold text-slate-800">
             Notifications
           </h1>
-          <button className="text-sm font-semibold text-[#805827] transition hover:text-[#FFD700]">
-            Mark all as read
+          <button
+            onClick={markAllRead}
+            disabled={unreadCount === 0 || markingAll}
+            className="text-sm font-semibold text-[#805827] transition hover:text-[#FFD700] disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:text-[#805827]"
+          >
+            {markingAll ? "Marking..." : "Mark all as read"}
           </button>
         </div>
         <p className="text-sm text-slate-500">
@@ -138,43 +250,92 @@ export default function NotificationsPage() {
 
       {/* Filter tabs */}
       <div className="mx-auto max-w-3xl px-6">
-        <div className="mb-6 flex items-center gap-2 border-b border-slate-200">
-          <button className="-mb-px border-b-2 border-[#FFD700] px-4 py-2.5 text-sm font-semibold text-slate-800">
-            All
-          </button>
-          <button className="px-4 py-2.5 text-sm font-medium text-slate-500 hover:text-slate-800">
-            Unread
-          </button>
-          <button className="px-4 py-2.5 text-sm font-medium text-slate-500 hover:text-slate-800">
-            Circulars
-          </button>
-          <button className="px-4 py-2.5 text-sm font-medium text-slate-500 hover:text-slate-800">
-            Status
-          </button>
+        <div className="mb-6 flex items-center gap-2 overflow-x-auto border-b border-slate-200">
+          {TABS.map((tab) => {
+            const active = filter === tab.key;
+            return (
+              <button
+                key={tab.key}
+                onClick={() => setFilter(tab.key)}
+                className={`flex items-center gap-1.5 whitespace-nowrap px-4 py-2.5 text-sm transition ${
+                  active
+                    ? "-mb-px border-b-2 border-[#FFD700] font-semibold text-slate-800"
+                    : "font-medium text-slate-500 hover:text-slate-800"
+                }`}
+              >
+                {tab.label}
+                {tab.key === "unread" && unreadCount > 0 && (
+                  <span className="rounded-full bg-[#805827]/10 px-1.5 text-[11px] font-semibold text-[#805827]">
+                    {unreadCount}
+                  </span>
+                )}
+              </button>
+            );
+          })}
         </div>
       </div>
 
       {/* Notification list */}
       <div className="mx-auto max-w-3xl space-y-3 px-6 pb-20">
-        <p className="pb-1 pt-2 text-xs font-semibold uppercase tracking-widest text-slate-400">
-          Today
-        </p>
-        {notifications.today.map((n) => (
-          <NotificationItem key={n.id} n={n} />
-        ))}
+        {error && (
+          <div className="flex items-center justify-between gap-3 rounded-xl border border-red-200 bg-red-50 p-4 text-sm text-red-700">
+            <span>{error}</span>
+            <button
+              onClick={() => load(filter, 1)}
+              className="font-semibold underline"
+            >
+              Try again
+            </button>
+          </div>
+        )}
 
-        <p className="pb-1 pt-6 text-xs font-semibold uppercase tracking-widest text-slate-400">
-          Earlier
-        </p>
-        {notifications.earlier.map((n) => (
-          <NotificationItem key={n.id} n={n} />
-        ))}
+        {loading ? (
+          <p className="py-10 text-center text-sm text-slate-500">
+            Loading notifications...
+          </p>
+        ) : (
+          <>
+            {!error && items.length === 0 && (
+              <div className="rounded-xl border border-dashed border-slate-300 py-14 text-center text-sm text-slate-500">
+                {EMPTY_TEXT[filter]}
+              </div>
+            )}
 
-        <div className="pt-6 text-center">
-          <button className="rounded-lg border border-slate-200 px-6 py-2.5 text-sm font-semibold text-slate-800 transition hover:bg-white">
-            Load earlier notifications
-          </button>
-        </div>
+            {today.length > 0 && (
+              <>
+                <p className="pb-1 pt-2 text-xs font-semibold uppercase tracking-widest text-slate-400">
+                  Today
+                </p>
+                {today.map((n) => (
+                  <NotificationItem key={n._id} n={n} onRead={markRead} />
+                ))}
+              </>
+            )}
+
+            {earlier.length > 0 && (
+              <>
+                <p className="pb-1 pt-6 text-xs font-semibold uppercase tracking-widest text-slate-400">
+                  Earlier
+                </p>
+                {earlier.map((n) => (
+                  <NotificationItem key={n._id} n={n} onRead={markRead} />
+                ))}
+              </>
+            )}
+
+            {hasMore && (
+              <div className="pt-6 text-center">
+                <button
+                  onClick={() => load(filter, page + 1)}
+                  disabled={loadingMore}
+                  className="rounded-lg border border-slate-200 px-6 py-2.5 text-sm font-semibold text-slate-800 transition hover:bg-white disabled:opacity-60"
+                >
+                  {loadingMore ? "Loading..." : "Load earlier notifications"}
+                </button>
+              </div>
+            )}
+          </>
+        )}
       </div>
     </div>
   );
