@@ -12,7 +12,8 @@ import Footer from "./components/Footer";
 import Login from "./pages/Login";
 import Signup from "./pages/Signup";
 import Contact from "./pages/Contact";
-import AdminPanel from './admin/AdminPanel';
+import AboutUs from "./pages/AboutUs";
+import AdminPanel from "./admin/AdminPanel";
 import ProtectedRoute from "./components/ProtectedRoute";
 
 function App() {
@@ -23,28 +24,64 @@ function App() {
 
         <Routes>
           <Route path="/" element={<Home />} />
+
           <Route
             path="/notifications"
-            element={<ProtectedRoute><NotificationsPage /></ProtectedRoute>}
+            element={
+              <ProtectedRoute>
+                <NotificationsPage />
+              </ProtectedRoute>
+            }
           />
+
           <Route path="/important-dates" element={<ImportantDates />} />
+
           <Route path="/circulars" element={<Circulars />} />
+
           <Route
             path="/apply/:circularId"
-            element={<ProtectedRoute><Apply /></ProtectedRoute>}
+            element={
+              <ProtectedRoute>
+                <Apply />
+              </ProtectedRoute>
+            }
           />
+
           <Route
             path="/assessment"
-            element={<ProtectedRoute><Assessment /></ProtectedRoute>}
+            element={
+              <ProtectedRoute>
+                <Assessment />
+              </ProtectedRoute>
+            }
           />
-          <Route path="/information" element={<ProtectedRoute><Information /></ProtectedRoute>} />
+
+          <Route
+            path="/information"
+            element={
+              <ProtectedRoute>
+                <Information />
+              </ProtectedRoute>
+            }
+          />
+
           <Route
             path="/account"
-            element={<ProtectedRoute><Account /></ProtectedRoute>}
+            element={
+              <ProtectedRoute>
+                <Account />
+              </ProtectedRoute>
+            }
           />
+
           <Route path="/login" element={<Login />} />
+
           <Route path="/signup" element={<Signup />} />
+
           <Route path="/contact" element={<Contact />} />
+
+          <Route path="/about-us" element={<AboutUs />} />
+
           <Route path="/admin" element={<AdminPanel />} />
         </Routes>
 

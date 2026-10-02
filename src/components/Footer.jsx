@@ -75,12 +75,12 @@ export default function Footer() {
           </li>
 
           <li>
-            <Link
-              to="/contact"
+            <a
+              href="/contact"
               className="mr-4 text-slate-800 hover:text-amber-700 md:mr-6"
             >
               Contact
-            </Link>
+            </a>
           </li>
 
           <li>

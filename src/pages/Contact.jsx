@@ -1,7 +1,55 @@
+import { useState } from "react";
 import { Mail, Phone, MapPin } from "lucide-react";
 import "@fortawesome/fontawesome-free/css/all.min.css";
 
 export default function Contact() {
+  const [formData, setFormData] = useState({
+    name: "",
+    email: "",
+    message: ""
+  });
+
+  const [status, setStatus] = useState("");
+
+  const handleChange = (e) => {
+    setFormData({
+      ...formData,
+      [e.target.name]: e.target.value
+    });
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    try {
+      const response = await fetch(
+        `${import.meta.env.VITE_API_URL}/contact`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify(formData)
+        }
+      );
+
+      const data = await response.json();
+
+      if (response.ok) {
+        setStatus("Message sent successfully!");
+        setFormData({
+          name: "",
+          email: "",
+          message: ""
+        });
+      } else {
+        setStatus(data.message || "Failed to send message.");
+      }
+    } catch (error) {
+      setStatus("Something went wrong. Please try again.");
+    }
+  };
+
   return (
     <section className="min-h-screen bg-stone-200 py-16 px-4">
       <div className="max-w-screen-xl mx-auto">
@@ -133,7 +181,7 @@ export default function Contact() {
               Send Us a Message
             </h2>
 
-            <form className="space-y-5">
+            <form onSubmit={handleSubmit} className="space-y-5">
 
               {/* Name */}
               <div>
@@ -144,7 +192,10 @@ export default function Contact() {
                 <input
                   type="text"
                   name="name"
+                  value={formData.name}
+                  onChange={handleChange}
                   placeholder="Enter your name"
+                  required
                   className="w-full rounded-lg border border-slate-300 bg-white p-3 text-slate-800 outline-none focus:border-[#805827] focus:ring-1 focus:ring-[#805827]"
                 />
               </div>
@@ -158,7 +209,10 @@ export default function Contact() {
                 <input
                   type="email"
                   name="email"
+                  value={formData.email}
+                  onChange={handleChange}
                   placeholder="Enter your email"
+                  required
                   className="w-full rounded-lg border border-slate-300 bg-white p-3 text-slate-800 outline-none focus:border-[#805827] focus:ring-1 focus:ring-[#805827]"
                 />
               </div>
@@ -171,8 +225,11 @@ export default function Contact() {
 
                 <textarea
                   name="message"
+                  value={formData.message}
+                  onChange={handleChange}
                   rows="6"
                   placeholder="Write your message..."
+                  required
                   className="w-full rounded-lg border border-slate-300 bg-white p-3 text-slate-800 outline-none resize-none focus:border-[#805827] focus:ring-1 focus:ring-[#805827]"
                 ></textarea>
               </div>
@@ -184,6 +241,12 @@ export default function Contact() {
               >
                 Send Message
               </button>
+
+              {status && (
+                <p className="text-center text-sm text-slate-600">
+                  {status}
+                </p>
+              )}
 
             </form>
           </div>
