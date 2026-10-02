@@ -55,7 +55,7 @@ export default function Navbar() {
     const loadCount = async () => {
       try {
         const res = await fetch(
-          `${import.meta.env.VITE_API_URL}/api/notifications/unread-count`,
+          `${import.meta.env.VITE_API_URL}/notifications/unread-count`,
           { headers: { Authorization: `Bearer ${getToken()}` } },
         );
         if (!res.ok) return;
