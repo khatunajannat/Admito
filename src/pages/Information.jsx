@@ -236,8 +236,12 @@ export default function Information() {
         headers: authHeaders(), // do NOT set Content-Type; the browser adds the multipart boundary
         body: form,
       });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.message || "Save failed");
+      const text = await res.text();
+      let data = {};
+      try { data = JSON.parse(text); } catch { /* server sent non-JSON (e.g. an HTML 404 page) */ }
+      if (!res.ok) {
+        throw new Error(data.message || `Save failed (${res.status}) at ${res.url} - is the backend route registered and running?`);
+      }
 
       // Uploaded files are now on the server
       setDocuments((prev) =>
