@@ -149,11 +149,15 @@ export default function NotificationsPage() {
 
     try {
       const res = await apiFetch(
-        `/api/notifications?filter=${nextFilter}&page=${nextPage}&limit=${PAGE_SIZE}`,
+        `/notifications?filter=${nextFilter}&page=${nextPage}&limit=${PAGE_SIZE}`,
       );
-      const data = await res.json();
-      if (!res.ok)
-        throw new Error(data.message || "Could not load notifications");
+      const data = await res.json().catch(() => null);
+      if (!res.ok || !data) {
+        throw new Error(
+          data?.message ||
+            `Could not load notifications (server returned ${res.status})`,
+        );
+      }
       if (id !== requestId.current) return;
 
       setItems((prev) => {
@@ -192,7 +196,7 @@ export default function NotificationsPage() {
     setUnreadCount((c) => Math.max(0, c - 1));
 
     try {
-      const res = await apiFetch(`/api/notifications/${id}/read`, {
+      const res = await apiFetch(`/notifications/${id}/read`, {
         method: "PATCH",
       });
       if (!res.ok) throw new Error("Failed");
@@ -208,7 +212,7 @@ export default function NotificationsPage() {
   const markAllRead = async () => {
     setMarkingAll(true);
     try {
-      const res = await apiFetch("/api/notifications/read-all", {
+      const res = await apiFetch("/notifications/read-all", {
         method: "PATCH",
       });
       if (!res.ok) throw new Error("Failed");
