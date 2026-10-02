@@ -1,4 +1,55 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
+
+// Works whether VITE_API_URL is "http://host:4000" or "http://host:4000/api"
+const API = (import.meta.env.VITE_API_URL || "http://localhost:4000")
+  .replace(/\/+$/, "")
+  .replace(/\/api$/, "");
+const MAX_FILE_SIZE = 2 * 1024 * 1024; // keep in sync with the backend limit
+const authHeaders = () => ({ Authorization: `Bearer ${localStorage.getItem("token")}` });
+
+// Fields marked with * must be filled before the profile can be saved
+const REQUIRED = {
+  personal: {
+    nameEn: "Full Name (English)", nameBn: "Full Name (বাংলা)", dob: "Date of Birth",
+    gender: "Gender", birthRegNo: "Birth Registration No.",
+  },
+  academic: {
+    sscBoard: "SSC Board", sscGroup: "SSC Group", sscYear: "SSC Passing Year",
+    sscRoll: "SSC Roll No.", sscRegNo: "SSC Registration No.", sscGpa: "SSC GPA",
+    hscBoard: "HSC Board", hscGroup: "HSC Group", hscYear: "HSC Passing Year",
+    hscRoll: "HSC Roll No.", hscRegNo: "HSC Registration No.", hscGpa: "HSC GPA",
+  },
+  guardian: {
+    fatherName: "Father's Name", motherName: "Mother's Name", applicantPhone: "Mobile Number",
+    presentAddress: "Present Address", permanentAddress: "Permanent Address",
+    division: "Division", district: "District",
+  },
+  documents: {
+    photo: "Passport Size Photo", signature: "Signature", nidSelf: "Your NID / Birth Reg.",
+    nidFather: "Father's NID", nidMother: "Mother's NID",
+    sscCertificate: "SSC Certificate / Marksheet", hscCertificate: "HSC Certificate / Marksheet",
+  },
+};
+
+// Returns { tab, message } for the first tab with problems, or null if everything is valid
+function validateProfile({ personal, academic, guardian, documents }) {
+  const values = { personal, academic, guardian, documents };
+  for (const tab of ["personal", "academic", "guardian", "documents"]) {
+    const missing = Object.entries(REQUIRED[tab])
+      .filter(([key]) => {
+        const v = values[tab][key];
+        return tab === "documents" ? !v : !String(v ?? "").trim();
+      })
+      .map(([, label]) => label);
+    if (missing.length) {
+      return { tab, message: `Please fill in the required fields: ${missing.join(", ")}.` };
+    }
+  }
+  if (guardian.guardianEmail && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(guardian.guardianEmail)) {
+    return { tab: "guardian", message: "Please enter a valid email address." };
+  }
+  return null;
+}
 
 const TABS = [
   { id: "personal", label: "Personal" },
@@ -57,9 +108,12 @@ function UploadSlot({ label, required, shape, value, onUpload, hint }) {
   const handleFile = (e) => {
     const file = e.target.files?.[0];
     if (!file) return;
-    const reader = new FileReader();
-    reader.onload = () => onUpload(reader.result, file.name);
-    reader.readAsDataURL(file);
+    if (file.size > MAX_FILE_SIZE) {
+      alert("File is too large (max 2 MB).");
+      e.target.value = "";
+      return;
+    }
+    onUpload(file);
   };
 
   const sizeClass =
@@ -114,7 +168,7 @@ function UploadSlot({ label, required, shape, value, onUpload, hint }) {
         <input
           ref={inputRef}
           type="file"
-          accept="image/*,.pdf"
+          accept="image/jpeg,image/png,application/pdf"
           onChange={handleFile}
           className="hidden"
         />
@@ -155,16 +209,118 @@ export default function Information() {
     nidMother: null, sscCertificate: null, hscCertificate: null,
   });
 
-  const setDoc = (key) => (dataUrl, name) => {
-    const isPdf = name.toLowerCase().endsWith(".pdf");
-    setDocuments((prev) => ({ ...prev, [key]: { preview: dataUrl, name, isPdf } }));
+  const [error, setError] = useState("");
+  const [saving, setSaving] = useState(false);
+  const [loading, setLoading] = useState(true);
+
+  // A picked file: keep the File itself (sent on save) + a temporary preview URL
+  const setDoc = (key) => (file) => {
+    setDocuments((prev) => {
+      if (prev[key]?.preview?.startsWith("blob:")) URL.revokeObjectURL(prev[key].preview);
+      return {
+        ...prev,
+        [key]: {
+          file,
+          name: file.name,
+          isPdf: file.type === "application/pdf",
+          preview: URL.createObjectURL(file),
+        },
+      };
+    });
   };
 
-  const handleSave = () => {
-    const profile = { personal, academic, guardian, documents };
-    localStorage.setItem("admito_applicant_profile", JSON.stringify(profile));
-    setSaved(true);
-    setTimeout(() => setSaved(false), 2500);
+  // Load the saved profile from the backend on mount, so every field shows what was saved (and stays editable)
+  useEffect(() => {
+    let cancelled = false;
+    (async () => {
+      try {
+        const res = await fetch(`${API}/api/profile`, { headers: authHeaders() });
+        if (cancelled) return;
+        if (res.status === 401) {
+          setError("Your session has expired. Please log in again to load your saved details.");
+          return;
+        }
+        if (!res.ok) {
+          setError(`Could not load your saved details (${res.status}).`);
+          return;
+        }
+        const data = await res.json(); // null when nothing has been saved yet
+        if (!data) return;
+
+        if (data.personal) setPersonal((p) => ({ ...p, ...data.personal }));
+        if (data.academic) setAcademic((a) => ({ ...a, ...data.academic }));
+        if (data.guardian) setGuardian((g) => ({ ...g, ...data.guardian }));
+        setLoading(false); // text fields are ready; images keep loading in the background
+
+        // Files are private, so <img src> can't send the token. Fetch each as a blob instead.
+        for (const [key, meta] of Object.entries(data.documents || {})) {
+          if (!meta?.publicId) continue;
+          const r = await fetch(`${API}/api/profile/documents/${key}`, { headers: authHeaders() });
+          if (!r.ok || cancelled) continue;
+          const blob = await r.blob();
+          if (cancelled) return;
+          setDocuments((prev) => ({
+            ...prev,
+            [key]: {
+              file: null, // already on the server, nothing to upload
+              name: meta.originalName,
+              isPdf: meta.mimeType === "application/pdf",
+              preview: URL.createObjectURL(blob),
+            },
+          }));
+        }
+      } catch (err) {
+        if (!cancelled) setError("Could not reach the server to load your saved details.");
+        console.error("Could not load profile", err);
+      } finally {
+        if (!cancelled) setLoading(false);
+      }
+    })();
+    return () => { cancelled = true; };
+  }, []);
+
+  const handleSave = async () => {
+    setError("");
+    const problem = validateProfile({ personal, academic, guardian, documents });
+    if (problem) {
+      setActiveTab(problem.tab); // jump to the tab that needs attention
+      setError(problem.message);
+      return;
+    }
+    setSaving(true);
+    try {
+      const form = new FormData();
+      form.append("personal", JSON.stringify(personal));
+      form.append("academic", JSON.stringify(academic));
+      form.append("guardian", JSON.stringify(guardian));
+      // Only send files the user picked this session
+      Object.entries(documents).forEach(([key, doc]) => {
+        if (doc?.file) form.append(key, doc.file);
+      });
+
+      const res = await fetch(`${API}/api/profile`, {
+        method: "PUT",
+        headers: authHeaders(), // do NOT set Content-Type; the browser adds the multipart boundary
+        body: form,
+      });
+      const text = await res.text();
+      let data = {};
+      try { data = JSON.parse(text); } catch { /* server sent non-JSON (e.g. an HTML 404 page) */ }
+      if (!res.ok) {
+        throw new Error(data.message || `Save failed (${res.status}) at ${res.url} - is the backend route registered and running?`);
+      }
+
+      // Uploaded files are now on the server
+      setDocuments((prev) =>
+        Object.fromEntries(Object.entries(prev).map(([k, d]) => [k, d ? { ...d, file: null } : d]))
+      );
+      setSaved(true);
+      setTimeout(() => setSaved(false), 2500);
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setSaving(false);
+    }
   };
 
   const docCount = Object.values(documents).filter(Boolean).length;
@@ -393,13 +549,15 @@ export default function Information() {
 
           {/* Save bar — Flowbite button pattern */}
           <div className="flex items-center justify-between gap-4 px-6 py-4 bg-gray-50 border-t border-gray-200 rounded-b-lg">
-            <p className="text-xs text-red-500 font-medium">
-              Saved details are stored on this device and reused to help you
-              fill out individual university forms faster.
+            <p className={`text-xs font-medium ${error ? "text-red-500" : "text-gray-500"}`}>
+              {error ||
+                (loading && "Loading your saved details...") ||
+                "Saved details are stored securely on your account and reused to help you fill out individual university forms faster."}
             </p>
             <button
               type="button"
               onClick={handleSave}
+              disabled={saving || loading}
               className="shrink-0 inline-flex items-center gap-2 text-white bg-[#805827] hover:bg-[#6b4820] focus:ring-4 focus:outline-none focus:ring-[#805827]/30 font-medium rounded-lg text-sm px-5 py-2.5 transition-colors"
             >
               {saved ? (
@@ -410,7 +568,7 @@ export default function Information() {
                   Saved
                 </>
               ) : (
-                "Save Profile"
+                saving ? "Saving..." : "Save Profile"
               )}
             </button>
           </div>

@@ -125,15 +125,6 @@ export default function Hero() {
               </svg>
             </a>
           )}
-
-          {isLoggedIn && (
-            <button
-              onClick={handleLogout}
-              className="inline-flex justify-center items-center py-3 px-6 text-sm font-semibold text-center text-slate-soft rounded-lg bg-gold hover:-translate-y-0.5 shadow-lg shadow-gold/25 transition"
-            >
-              Logout
-            </button>
-          )}
         </div>
 
         <div className="px-4 mx-auto text-center md:max-w-screen-md lg:max-w-screen-lg lg:px-36">

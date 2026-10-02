@@ -1,23 +1,15 @@
 import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import { apiFetch, logout } from "../utils/api";
 
 export default function Account() {
   const navigate = useNavigate();
   const [user, setUser] = useState(null);
-  const [loading, setLoading] = useState(
-    () => !!localStorage.getItem("userId"),
-  );
-
+  const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
   useEffect(() => {
-    const userId = localStorage.getItem("userId");
-
-    if (!userId) {
-      return;
-    }
-
-    fetch(`${import.meta.env.VITE_API_URL}/users/${userId}`)
+    apiFetch("/users/me")
       .then((res) => {
         if (!res.ok) throw new Error("Failed to load account");
         return res.json();
@@ -28,8 +20,7 @@ export default function Account() {
   }, []);
 
   const handleLogout = () => {
-    localStorage.removeItem("isLoggedIn");
-    localStorage.removeItem("userId");
+    logout();
     navigate("/login");
   };
 
