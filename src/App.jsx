@@ -16,6 +16,7 @@ import Contact from "./pages/Contact";
 import AboutUs from "./pages/AboutUs";
 import AdminPanel from "./admin/AdminPanel";
 import ProtectedRoute from "./components/ProtectedRoute";
+import CarbonFootprintDisplay from "./components/CarbonFootprintDisplay";
 
 function App() {
   return (
@@ -88,9 +89,11 @@ function App() {
           <Route path="/about-us" element={<AboutUs />} />
 
           <Route path="/admin" element={<AdminPanel />} />
+          
         </Routes>
 
         <Footer />
+        <CarbonFootprintDisplay /> 
       </div>
     </BrowserRouter>
   );
