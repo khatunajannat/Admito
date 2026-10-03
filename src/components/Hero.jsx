@@ -1,19 +1,21 @@
 import { Link } from "react-router-dom";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { getToken } from "../utils/api";
 
 export default function Hero() {
-  const [isLoggedIn, setIsLoggedIn] = useState(
-    () => localStorage.getItem("isLoggedIn") === "true",
-  );
+  // same check the Navbar uses: logged in = there is a token
+  const [isLoggedIn, setIsLoggedIn] = useState(() => !!getToken());
+
+  // update right away after login / logout
+  useEffect(() => {
+    const sync = () => setIsLoggedIn(!!getToken());
+    window.addEventListener("auth-change", sync);
+    return () => window.removeEventListener("auth-change", sync);
+  }, []);
 
   const scrollToFeatures = (e) => {
     e.preventDefault();
     document.getElementById("features")?.scrollIntoView({ behavior: "smooth" });
-  };
-
-  const handleLogout = () => {
-    localStorage.removeItem("isLoggedIn");
-    setIsLoggedIn(false);
   };
 
   return (
@@ -61,27 +63,25 @@ export default function Hero() {
         </p>
 
         <div className="flex flex-col mb-12 lg:mb-20 min-h-[52px] items-center justify-center space-y-4 sm:flex-row sm:space-y-0 sm:space-x-4">
-          {!isLoggedIn && (
-            <a
-              href="#features"
-              onClick={scrollToFeatures}
-              className="inline-flex justify-center items-center py-3 px-6 text-sm font-semibold text-center text-slate-soft rounded-lg bg-gold hover:-translate-y-0.5 shadow-lg shadow-gold/25 transition"
+          <a
+            href="#features"
+            onClick={scrollToFeatures}
+            className="inline-flex justify-center items-center py-3 px-6 text-sm font-semibold text-center text-slate-soft rounded-lg bg-gold hover:-translate-y-0.5 shadow-lg shadow-gold/25 transition"
+          >
+            Visit Site
+            <svg
+              className="ml-2 -mr-1 w-5 h-5"
+              fill="currentColor"
+              viewBox="0 0 20 20"
+              xmlns="http://www.w3.org/2000/svg"
             >
-              Visit Site
-              <svg
-                className="ml-2 -mr-1 w-5 h-5"
-                fill="currentColor"
-                viewBox="0 0 20 20"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path
-                  fillRule="evenodd"
-                  d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z"
-                  clipRule="evenodd"
-                ></path>
-              </svg>
-            </a>
-          )}
+              <path
+                fillRule="evenodd"
+                d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z"
+                clipRule="evenodd"
+              ></path>
+            </svg>
+          </a>
 
           {!isLoggedIn && (
             <Link
@@ -102,28 +102,6 @@ export default function Hero() {
                 ></path>
               </svg>
             </Link>
-          )}
-
-          {isLoggedIn && (
-            <a
-              href="#features"
-              onClick={scrollToFeatures}
-              className="inline-flex justify-center items-center py-3 px-6 text-sm font-semibold text-center text-slate-soft rounded-lg bg-gold hover:-translate-y-0.5 shadow-lg shadow-gold/25 transition"
-            >
-              Visit Site
-              <svg
-                className="ml-2 -mr-1 w-5 h-5"
-                fill="currentColor"
-                viewBox="0 0 20 20"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path
-                  fillRule="evenodd"
-                  d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z"
-                  clipRule="evenodd"
-                ></path>
-              </svg>
-            </a>
           )}
         </div>
 
