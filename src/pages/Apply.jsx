@@ -37,6 +37,12 @@ const INITIAL_FORM = {
 const inputClass =
   "bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-[#805827] focus:border-[#805827] block w-full p-2.5";
 
+// Same as inputClass, with a soft highlight for fields that were autofilled
+const autofilledClass = inputClass.replace(
+  "bg-gray-50 border border-gray-300",
+  "bg-amber-50 border border-[#805827]/40"
+);
+
 function formatDate(dateStr) {
   if (!dateStr) return "TBA";
   return new Date(dateStr).toLocaleDateString("en-GB", {
@@ -73,6 +79,62 @@ function buildPayload(form) {
   return payload;
 }
 
+// ---- autofill helpers ----
+// The Information page spells a few things differently from this form
+const BOARD_ALIASES = {
+  Chittagong: "Chattogram",
+  Barisal: "Barishal",
+  Comilla: "Cumilla",
+  Jessore: "Jashore",
+};
+
+const text = (v) => String(v ?? "").trim();
+const mapBoard = (board) => {
+  const name = BOARD_ALIASES[text(board)] || text(board);
+  return BOARDS.includes(name) ? name : "";
+};
+const mapGender = (g) => {
+  const v = text(g).toLowerCase();
+  return ["male", "female", "other"].includes(v) ? v : "";
+};
+const mapDate = (d) => (/^\d{4}-\d{2}-\d{2}$/.test(text(d)) ? text(d) : "");
+const mapNumber = (n) => (text(n) !== "" && !Number.isNaN(Number(text(n))) ? text(n) : "");
+const mapPhone = (p) => text(p).replace(/[\s\-()]/g, "");
+
+// The login email is inside the login token, so no extra request is needed
+function getLoginEmail() {
+  try {
+    const part = localStorage.getItem("token").split(".")[1].replace(/-/g, "+").replace(/_/g, "/");
+    return JSON.parse(atob(part)).email || "";
+  } catch {
+    return "";
+  }
+}
+
+// What the saved profile can offer, keyed like the form fields ("ssc.board" etc.)
+function buildSuggestions(profile) {
+  const p = profile.personal || {};
+  const a = profile.academic || {};
+  const g = profile.guardian || {};
+  return {
+    fullName: text(p.nameEn),
+    fatherName: text(g.fatherName),
+    motherName: text(g.motherName),
+    dateOfBirth: mapDate(p.dob),
+    gender: mapGender(p.gender),
+    phone: mapPhone(g.applicantPhone),
+    email: getLoginEmail(),
+    address: text(g.presentAddress),
+    "ssc.board": mapBoard(a.sscBoard),
+    "ssc.year": mapNumber(a.sscYear),
+    "ssc.gpa": mapNumber(a.sscGpa),
+    "hsc.board": mapBoard(a.hscBoard),
+    "hsc.year": mapNumber(a.hscYear),
+    "hsc.gpa": mapNumber(a.hscGpa),
+  };
+}
+// ---- end autofill helpers ----
+
 function Field({ label, required, className = "", children }) {
   return (
     <label className={`block ${className}`}>
@@ -85,7 +147,7 @@ function Field({ label, required, className = "", children }) {
   );
 }
 
-function AcademicFields({ group, title, values, onChange }) {
+function AcademicFields({ group, title, values, onChange, cls }) {
   return (
     <div>
       <h3 className="text-sm font-semibold text-gray-800 mb-3">{title}</h3>
@@ -95,7 +157,7 @@ function AcademicFields({ group, title, values, onChange }) {
             name={`${group}.board`}
             value={values.board}
             onChange={onChange}
-            className={inputClass}
+            className={cls(`${group}.board`)}
           >
             <option value="">Select board</option>
             {BOARDS.map((b) => (
@@ -114,7 +176,7 @@ function AcademicFields({ group, title, values, onChange }) {
             min="1990"
             max={new Date().getFullYear()}
             placeholder="e.g. 2023"
-            className={inputClass}
+            className={cls(`${group}.year`)}
           />
         </Field>
         <Field label="GPA (out of 5)">
@@ -127,7 +189,7 @@ function AcademicFields({ group, title, values, onChange }) {
             max="5"
             step="0.01"
             placeholder="e.g. 5.00"
-            className={inputClass}
+            className={cls(`${group}.gpa`)}
           />
         </Field>
       </div>
@@ -148,6 +210,13 @@ export default function Apply() {
   const [submitError, setSubmitError] = useState("");
   const [alreadyApplied, setAlreadyApplied] = useState(false);
   const [submitted, setSubmitted] = useState(null);
+
+  // autofill from the Information page
+  const [profile, setProfile] = useState(null);
+  const [profileStatus, setProfileStatus] = useState("loading"); // loading | found | none | error
+  const [autofilled, setAutofilled] = useState(new Set()); // fields filled automatically
+  const [filledCount, setFilledCount] = useState(null); // null = not used yet
+  const [undoForm, setUndoForm] = useState(null);
 
   useEffect(() => {
     const controller = new AbortController();
@@ -172,6 +241,33 @@ export default function Apply() {
     return () => controller.abort();
   }, [circularId]);
 
+  // load the profile saved on the Information page
+  useEffect(() => {
+    const controller = new AbortController();
+
+    async function loadProfile() {
+      try {
+        const res = await fetch(`${API_URL}/profile`, {
+          headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
+          signal: controller.signal,
+        });
+        if (!res.ok) throw new Error("Could not load profile");
+        const data = await res.json(); // null if the user never saved a profile
+        if (data) {
+          setProfile(data);
+          setProfileStatus("found");
+        } else {
+          setProfileStatus("none");
+        }
+      } catch (err) {
+        if (err.name !== "AbortError") setProfileStatus("error");
+      }
+    }
+
+    loadProfile();
+    return () => controller.abort();
+  }, []);
+
   const handleChange = (e) => {
     const { name, value } = e.target;
     if (name.includes(".")) {
@@ -180,7 +276,46 @@ export default function Apply() {
     } else {
       setForm((prev) => ({ ...prev, [name]: value }));
     }
+    // once the student edits a field, it is no longer highlighted as autofilled
+    setAutofilled((prev) => {
+      if (!prev.has(name)) return prev;
+      const next = new Set(prev);
+      next.delete(name);
+      return next;
+    });
   };
+
+  // fills only EMPTY fields, so anything already typed is never overwritten
+  const handleAutofill = () => {
+    if (!profile) return;
+    const next = { ...form, ssc: { ...form.ssc }, hsc: { ...form.hsc } };
+    const filled = [];
+
+    for (const [key, value] of Object.entries(buildSuggestions(profile))) {
+      if (!value) continue;
+      const [group, field] = key.split(".");
+      const current = field ? next[group][field] : next[key];
+      if (String(current).trim() !== "") continue;
+      if (field) next[group][field] = value;
+      else next[key] = value;
+      filled.push(key);
+    }
+
+    setUndoForm(form);
+    setForm(next);
+    setAutofilled(new Set(filled));
+    setFilledCount(filled.length);
+  };
+
+  const handleUndoAutofill = () => {
+    if (undoForm) setForm(undoForm);
+    setUndoForm(null);
+    setAutofilled(new Set());
+    setFilledCount(null);
+  };
+
+  // class for an input: highlighted while it holds an autofilled value
+  const cls = (name) => (autofilled.has(name) ? autofilledClass : inputClass);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -332,6 +467,54 @@ export default function Apply() {
         Admito for practice and tracking only. It is not sent to the university.
       </div>
 
+      {/* Autofill from the Information page */}
+      {profileStatus === "found" && (
+        <div className="flex flex-wrap items-center justify-between gap-3 bg-white border border-[#805827]/30 rounded-lg px-4 py-3 mb-6">
+          <div>
+            <p className="text-sm font-medium text-slate-800">
+              {filledCount === null
+                ? "We found your saved information."
+                : filledCount > 0
+                ? `Filled ${filledCount} field${filledCount > 1 ? "s" : ""} from your profile.`
+                : "Nothing new to fill from your profile."}
+            </p>
+            <p className="text-xs text-slate-500 mt-0.5">
+              {filledCount > 0
+                ? "Highlighted fields were filled automatically. Please review them before submitting."
+                : "Autofill only fills empty fields, so what you typed stays as it is."}
+            </p>
+          </div>
+          <div className="flex items-center gap-2">
+            {undoForm && filledCount > 0 && (
+              <button
+                type="button"
+                onClick={handleUndoAutofill}
+                className="text-sm font-medium text-gray-700 border border-gray-300 hover:bg-gray-100 rounded-lg px-3 py-2"
+              >
+                Undo
+              </button>
+            )}
+            <button
+              type="button"
+              onClick={handleAutofill}
+              className="text-sm font-medium text-white bg-[#805827] hover:bg-[#6b4620] rounded-lg px-4 py-2 transition-colors duration-150"
+            >
+              Autofill from my profile
+            </button>
+          </div>
+        </div>
+      )}
+
+      {profileStatus === "none" && (
+        <div className="bg-white border border-slate-200 text-sm text-slate-600 rounded-lg px-4 py-3 mb-6">
+          You have not saved your details yet. Fill them in once on the{" "}
+          <Link to="/information" className="font-medium text-[#805827] underline">
+            Information page
+          </Link>{" "}
+          and you can autofill this form next time.
+        </div>
+      )}
+
       <form onSubmit={handleSubmit} className="bg-white rounded-lg shadow-sm p-6 space-y-8">
         {/* Personal information */}
         <div>
@@ -346,7 +529,7 @@ export default function Apply() {
                 value={form.fullName}
                 onChange={handleChange}
                 required
-                className={inputClass}
+                className={cls("fullName")}
               />
             </Field>
             <Field label="Father's name">
@@ -355,7 +538,7 @@ export default function Apply() {
                 name="fatherName"
                 value={form.fatherName}
                 onChange={handleChange}
-                className={inputClass}
+                className={cls("fatherName")}
               />
             </Field>
             <Field label="Mother's name">
@@ -364,7 +547,7 @@ export default function Apply() {
                 name="motherName"
                 value={form.motherName}
                 onChange={handleChange}
-                className={inputClass}
+                className={cls("motherName")}
               />
             </Field>
             <Field label="Date of birth">
@@ -373,7 +556,7 @@ export default function Apply() {
                 name="dateOfBirth"
                 value={form.dateOfBirth}
                 onChange={handleChange}
-                className={inputClass}
+                className={cls("dateOfBirth")}
               />
             </Field>
             <Field label="Gender">
@@ -381,7 +564,7 @@ export default function Apply() {
                 name="gender"
                 value={form.gender}
                 onChange={handleChange}
-                className={inputClass}
+                className={cls("gender")}
               >
                 <option value="">Select gender</option>
                 <option value="male">Male</option>
@@ -399,7 +582,7 @@ export default function Apply() {
                 pattern="\+?[0-9]{10,15}"
                 title="10 to 15 digits, optionally starting with +"
                 placeholder="01XXXXXXXXX"
-                className={inputClass}
+                className={cls("phone")}
               />
             </Field>
             <Field label="Email" required>
@@ -409,7 +592,7 @@ export default function Apply() {
                 value={form.email}
                 onChange={handleChange}
                 required
-                className={inputClass}
+                className={cls("email")}
               />
             </Field>
             <Field label="Address" className="md:col-span-2">
@@ -418,7 +601,7 @@ export default function Apply() {
                 value={form.address}
                 onChange={handleChange}
                 rows={3}
-                className={inputClass}
+                className={cls("address")}
               />
             </Field>
           </div>
@@ -435,12 +618,14 @@ export default function Apply() {
               title="SSC / Equivalent"
               values={form.ssc}
               onChange={handleChange}
+              cls={cls}
             />
             <AcademicFields
               group="hsc"
               title="HSC / Equivalent"
               values={form.hsc}
               onChange={handleChange}
+              cls={cls}
             />
           </div>
         </div>
