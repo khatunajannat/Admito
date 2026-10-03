@@ -1,204 +1,4 @@
-import { useState, useMemo } from "react";
-
-const UNIVERSITIES = [
-  {
-    id: 1,
-    name: "Dhaka University",
-    type: "public",
-    unit: "Ka Unit (Science)",
-    groups: ["Science"],
-    eligibility: {
-      minGPA: "SSC + HSC combined ≥ 8.00 (no GPA below 3.5 in either)",
-      requiredSubjects: ["Physics", "Chemistry", "Mathematics/Biology"],
-    },
-    examPattern: {
-      mode: "MCQ",
-      duration: "60 minutes",
-      totalMarks: 100,
-      negativeMarking: "-0.25 per wrong answer",
-      questionCount: 100,
-    },
-    markDistribution: [
-      { subject: "Physics", marks: 20 },
-      { subject: "Chemistry", marks: 20 },
-      { subject: "Mathematics", marks: 20 },
-      { subject: "Biology", marks: 20 },
-      { subject: "English", marks: 10 },
-      { subject: "General Knowledge", marks: 10 },
-    ],
-  },
-  {
-    id: 2,
-    name: "BUET",
-    type: "public",
-    unit: "Undergraduate Admission",
-    groups: ["Science"],
-    eligibility: {
-      minGPA:
-        "SSC + HSC combined ≥ 9.00 (GPA 5.00 preferred in Math/Physics/Chemistry)",
-      requiredSubjects: ["Physics", "Chemistry", "Mathematics"],
-    },
-    examPattern: {
-      mode: "Written (short + analytical)",
-      duration: "150 minutes (2 sittings)",
-      totalMarks: 400,
-      negativeMarking:
-        "None on written; MCQ pre-screening has negative marking",
-      questionCount: "Pre-screening MCQ + written analytical",
-    },
-    markDistribution: [
-      { subject: "Mathematics", marks: 125 },
-      { subject: "Physics", marks: 112.5 },
-      { subject: "Chemistry", marks: 112.5 },
-      { subject: "English", marks: 50 },
-    ],
-  },
-  {
-    id: 3,
-    name: "Jahangirnagar University",
-    type: "public",
-    unit: "A Unit (Science)",
-    groups: ["Science"],
-    eligibility: {
-      minGPA: "SSC + HSC combined ≥ 8.00",
-      requiredSubjects: ["Physics", "Chemistry", "Mathematics/Biology"],
-    },
-    examPattern: {
-      mode: "MCQ",
-      duration: "45 minutes",
-      totalMarks: 80,
-      negativeMarking: "-0.20 per wrong answer",
-      questionCount: 80,
-    },
-    markDistribution: [
-      { subject: "Physics", marks: 20 },
-      { subject: "Chemistry", marks: 20 },
-      { subject: "Mathematics/Biology", marks: 20 },
-      { subject: "English", marks: 10 },
-      { subject: "General Knowledge", marks: 10 },
-    ],
-  },
-  {
-    id: 4,
-    name: "Chittagong University",
-    type: "public",
-    unit: "B Unit (Arts & Social Science)",
-    groups: ["Arts", "Commerce"],
-    eligibility: {
-      minGPA: "SSC + HSC combined ≥ 6.50",
-      requiredSubjects: ["Any HSC group accepted"],
-    },
-    examPattern: {
-      mode: "MCQ",
-      duration: "45 minutes",
-      totalMarks: 100,
-      negativeMarking: "-0.25 per wrong answer",
-      questionCount: 100,
-    },
-    markDistribution: [
-      { subject: "Bangla", marks: 25 },
-      { subject: "English", marks: 25 },
-      { subject: "General Knowledge", marks: 30 },
-      { subject: "Analytical Ability", marks: 20 },
-    ],
-  },
-  {
-    id: 5,
-    name: "Ahsanullah University of Science and Technology",
-    type: "private",
-    unit: "B.Sc in CSE / EEE / Others",
-    groups: ["Science"],
-    eligibility: {
-      minGPA: "SSC + HSC combined ≥ 6.00 (varies slightly by program)",
-      requiredSubjects: ["Physics", "Chemistry", "Mathematics"],
-    },
-    examPattern: {
-      mode: "MCQ + Written (Math)",
-      duration: "60 minutes",
-      totalMarks: 100,
-      negativeMarking: "None",
-      questionCount: "50 MCQ + short written math",
-    },
-    markDistribution: [
-      { subject: "Mathematics", marks: 40 },
-      { subject: "Physics", marks: 20 },
-      { subject: "Chemistry", marks: 20 },
-      { subject: "English", marks: 20 },
-    ],
-  },
-  {
-    id: 6,
-    name: "North South University",
-    type: "private",
-    unit: "Undergraduate Programs",
-    groups: ["Science", "Commerce", "Arts"],
-    eligibility: {
-      minGPA: "SSC + HSC combined ≥ 6.00 (program dependent, some need ≥7.00)",
-      requiredSubjects: [
-        "Depends on program — Science required for Engineering/CS",
-      ],
-    },
-    examPattern: {
-      mode: "No admission test — GPA + SAT/university-specific screening (optional)",
-      duration: "N/A",
-      totalMarks: "N/A",
-      negativeMarking: "N/A",
-      questionCount: "N/A",
-    },
-    markDistribution: [
-      { subject: "SSC GPA (weighted)", marks: 50 },
-      { subject: "HSC GPA (weighted)", marks: 50 },
-    ],
-  },
-  {
-    id: 7,
-    name: "BRAC University",
-    type: "private",
-    unit: "Undergraduate Programs",
-    groups: ["Science", "Commerce", "Arts"],
-    eligibility: {
-      minGPA: "SSC + HSC combined ≥ 6.00",
-      requiredSubjects: [
-        "Depends on program — Science required for Engineering/CS",
-      ],
-    },
-    examPattern: {
-      mode: "Written English + Math screening for select programs",
-      duration: "60 minutes",
-      totalMarks: 100,
-      negativeMarking: "None",
-      questionCount: "Varies by program",
-    },
-    markDistribution: [
-      { subject: "English", marks: 50 },
-      { subject: "Mathematics/Analytical", marks: 50 },
-    ],
-  },
-  {
-    id: 8,
-    name: "Rajshahi University",
-    type: "public",
-    unit: "Unit A (Science)",
-    groups: ["Science"],
-    eligibility: {
-      minGPA: "SSC + HSC combined ≥ 8.00",
-      requiredSubjects: ["Physics", "Chemistry", "Mathematics/Biology"],
-    },
-    examPattern: {
-      mode: "MCQ",
-      duration: "60 minutes",
-      totalMarks: 100,
-      negativeMarking: "-0.25 per wrong answer",
-      questionCount: 100,
-    },
-    markDistribution: [
-      { subject: "Physics", marks: 25 },
-      { subject: "Chemistry", marks: 25 },
-      { subject: "Mathematics/Biology", marks: 25 },
-      { subject: "English & GK", marks: 25 },
-    ],
-  },
-];
+import { useEffect, useMemo, useState } from "react";
 
 const GROUP_STYLES = {
   Science: "bg-blue-100 text-blue-800",
@@ -220,35 +20,68 @@ function MaxMark({ dist }) {
 }
 
 export default function Assessment() {
+  const [universities, setUniversities] = useState([]);
   const [query, setQuery] = useState("");
   const [groupFilter, setGroupFilter] = useState("all");
-  const [expandedId, setExpandedId] = useState(UNIVERSITIES[0].id);
+  const [expandedId, setExpandedId] = useState(null);
+
+  useEffect(() => {
+    const fetchAssessments = async () => {
+      try {
+        const baseUrl =
+          import.meta.env.VITE_API_URL || "http://localhost:4000/api";
+
+        const response = await fetch(`${baseUrl}/assessments`);
+
+        if (!response.ok) {
+          throw new Error("Failed to load assessments");
+        }
+
+        const data = await response.json();
+
+        setUniversities(data);
+
+        if (data.length > 0) {
+          setExpandedId(data[0]._id);
+        }
+      } catch (error) {
+        console.error("Error loading assessments:", error);
+      }
+    };
+
+    fetchAssessments();
+  }, []);
 
   const filtered = useMemo(() => {
-    return UNIVERSITIES.filter((u) => {
+    return universities.filter((u) => {
       const matchesQuery =
         query.trim() === "" ||
         u.name.toLowerCase().includes(query.toLowerCase()) ||
         u.unit.toLowerCase().includes(query.toLowerCase());
+
       const matchesGroup =
         groupFilter === "all" || u.groups.includes(groupFilter);
+
       return matchesQuery && matchesGroup;
     });
-  }, [query, groupFilter]);
+  }, [query, groupFilter, universities]);
 
   return (
     <section className="min-h-screen bg-stone-200">
-      <div className="relative overflow-hidden bg-gradient-to-b from-navy to-navy-light pt-24 sm:pt-28 md:pt-32 pb-12 px-4">
+      <div className="relative overflow-hidden bg-gradient-to-b from-navy to-navy-light pt-4 sm:pt-6 md:pt-8 pb-12 px-4">
         <div className="pointer-events-none absolute -top-20 -right-20 h-80 w-80 rounded-full border border-amber-700"></div>
+
         <div className="pointer-events-none absolute top-10 right-5 h-52 w-52 rounded-full border border-gold/15"></div>
 
         <div className="relative max-w-5xl mx-auto text-center">
           <span className="inline-block text-xl font-semibold text-slate-800 bg-gold rounded-full px-1 py-1.5 mb-4">
             Exam Guide
           </span>
+
           <h1 className="font-display text-3xl md:text-4xl lg:text-5xl font-semibold tracking-tight text-slate-800 mb-3">
             Assessment &amp; Mark Distribution
           </h1>
+
           <p className="text-amber-700 max-w-2xl mx-auto lg:text-lg">
             Compare eligibility, subject-wise mark breakdown, and exam patterns
             across public and private universities in Bangladesh — know exactly
@@ -274,6 +107,7 @@ export default function Assessment() {
                 d="M21 21l-4.35-4.35M11 19a8 8 0 100-16 8 8 0 000 16z"
               />
             </svg>
+
             <input
               type="text"
               value={query}
@@ -301,21 +135,22 @@ export default function Assessment() {
         </div>
 
         <p className="text-sm text-slate-500 mb-4">
-          Showing {filtered.length} of {UNIVERSITIES.length} universities
+          Showing {filtered.length} of {universities.length} universities
         </p>
 
         {/* Accordion list */}
         <div className="space-y-4">
           {filtered.map((u) => {
-            const isOpen = expandedId === u.id;
+            const isOpen = expandedId === u._id;
+
             return (
               <div
-                key={u.id}
+                key={u._id}
                 className="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden"
               >
                 {/* Header — always visible */}
                 <button
-                  onClick={() => setExpandedId(isOpen ? null : u.id)}
+                  onClick={() => setExpandedId(isOpen ? null : u._id)}
                   className="w-full flex items-center justify-between gap-4 p-5 text-left hover:bg-stone-50 transition-colors"
                 >
                   <div>
@@ -323,13 +158,18 @@ export default function Assessment() {
                       <h3 className="text-base md:text-lg font-semibold text-slate-800">
                         {u.name}
                       </h3>
+
                       <span
                         className={`text-xs font-medium px-2 py-0.5 rounded capitalize ${TYPE_BADGE[u.type]}`}
                       >
                         {u.type}
                       </span>
                     </div>
-                    <p className="text-xs text-slate-500 mb-2">{u.unit}</p>
+
+                    <p className="text-xs text-slate-500 mb-2">
+                      {u.unit}
+                    </p>
+
                     <div className="flex gap-1.5 flex-wrap">
                       {u.groups.map((g) => (
                         <span
@@ -341,8 +181,11 @@ export default function Assessment() {
                       ))}
                     </div>
                   </div>
+
                   <svg
-                    className={`w-5 h-5 text-slate-400 shrink-0 transition-transform duration-200 ${isOpen ? "rotate-180" : ""}`}
+                    className={`w-5 h-5 text-slate-400 shrink-0 transition-transform duration-200 ${
+                      isOpen ? "rotate-180" : ""
+                    }`}
                     fill="none"
                     stroke="currentColor"
                     viewBox="0 0 24 24"
@@ -378,9 +221,11 @@ export default function Assessment() {
                           </svg>
                           Eligibility
                         </h4>
+
                         <p className="text-sm text-slate-600 mb-2">
                           {u.eligibility.minGPA}
                         </p>
+
                         <div className="flex flex-wrap gap-1.5">
                           {u.eligibility.requiredSubjects.map((s) => (
                             <span
@@ -411,6 +256,7 @@ export default function Assessment() {
                           </svg>
                           Exam Pattern
                         </h4>
+
                         <dl className="text-sm text-slate-600 space-y-1.5">
                           <div className="flex justify-between gap-3">
                             <dt className="text-slate-400">Mode</dt>
@@ -418,26 +264,32 @@ export default function Assessment() {
                               {u.examPattern.mode}
                             </dd>
                           </div>
+
                           <div className="flex justify-between gap-3">
                             <dt className="text-slate-400">Duration</dt>
                             <dd className="text-right font-medium text-slate-700">
                               {u.examPattern.duration}
                             </dd>
                           </div>
+
                           <div className="flex justify-between gap-3">
                             <dt className="text-slate-400">Total Marks</dt>
                             <dd className="text-right font-medium text-slate-700">
                               {u.examPattern.totalMarks}
                             </dd>
                           </div>
+
                           <div className="flex justify-between gap-3">
                             <dt className="text-slate-400">Questions</dt>
                             <dd className="text-right font-medium text-slate-700">
                               {u.examPattern.questionCount}
                             </dd>
                           </div>
+
                           <div className="flex justify-between gap-3">
-                            <dt className="text-slate-400">Negative Marking</dt>
+                            <dt className="text-slate-400">
+                              Negative Marking
+                            </dt>
                             <dd className="text-right font-medium text-slate-700">
                               {u.examPattern.negativeMarking}
                             </dd>
@@ -463,18 +315,26 @@ export default function Assessment() {
                         </svg>
                         Mark Distribution
                       </h4>
+
                       <div className="space-y-2.5">
                         {u.markDistribution.map((d) => {
-                          const max = MaxMark({ dist: u.markDistribution });
-                          const pct = max > 0 ? (d.marks / max) * 100 : 0;
+                          const max = MaxMark({
+                            dist: u.markDistribution,
+                          });
+
+                          const pct =
+                            max > 0 ? (d.marks / max) * 100 : 0;
+
                           return (
                             <div key={d.subject}>
                               <div className="flex justify-between text-xs text-slate-600 mb-1">
                                 <span>{d.subject}</span>
+
                                 <span className="font-medium">
                                   {d.marks} marks
                                 </span>
                               </div>
+
                               <div className="w-full h-2 bg-stone-100 rounded-full overflow-hidden">
                                 <div
                                   className="h-full bg-gold rounded-full"
