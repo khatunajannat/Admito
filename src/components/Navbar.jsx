@@ -41,9 +41,6 @@ export default function Navbar() {
     return () => window.removeEventListener("auth-change", sync);
   }, []);
 
-  // real unread count for the bell badge.
-  // Plain fetch (not apiFetch) on purpose: an expired token on a public page
-  // should just hide the badge, not redirect the visitor to /login.
   useEffect(() => {
     if (!loggedIn) {
       // eslint-disable-next-line react-hooks/set-state-in-effect
@@ -68,7 +65,6 @@ export default function Navbar() {
 
     loadCount();
     const timer = setInterval(loadCount, 60000); // refresh every minute
-    // the notifications page fires this when something is marked as read
     window.addEventListener("notifications-change", loadCount);
 
     return () => {
@@ -108,6 +104,7 @@ export default function Navbar() {
 
   return (
     <nav className="fixed top-0 inset-x-0 z-50 bg-slate-800 backdrop-blur-lg">
+      {/*nav bar bg atke rakhte backdrop-blur use kora hoise*/}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16 md:h-20 lg:h-24">
           {/* Logo */}
